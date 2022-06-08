@@ -50,7 +50,7 @@ is located at [IBM Z and LinuxONE Container Registry](https://ibm.github.io/ibm-
 You can pull the image as shown in the following code block:
 
 ```
-DLC_IMAGE_ID=icr.io/ibmz_zdlc/onnx-mlir:[version]
+DLC_IMAGE_ID=icr.io/ibmz/onnx-mlir:[version]
 docker pull {$DLC_IMAGE_ID}
 ```
 Set `[version]` based on the version available in IBM Z and
