@@ -51,7 +51,7 @@ You can pull the image as shown in the following code block:
 
 ```
 DLC_IMAGE_ID=icr.io/ibmz/onnx-mlir:[version]
-docker pull {$DLC_IMAGE_ID}
+docker pull ${DLC_IMAGE_ID}
 ```
 Set `[version]` based on the version available in IBM Z and
 LinuxONE Container Registry. We will use this environment variable to simplify
@@ -332,7 +332,7 @@ links for this example.
 Build the example Python image with the following command:
 
 ```
-docker build -f ${ZDLC_DIR}/docker/Dockerfile.python -t zdlc-python-example
+docker build -f ${ZDLC_DIR}/docker/Dockerfile.python -t zdlc-python-example .
 ```
 
 | Command<br>and<br>Parameters | Description |
