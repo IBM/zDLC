@@ -7,7 +7,7 @@
 * [Building the code samples](#code-samples)
     * [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)
     * [Building C++ programs to call the model](#run-cpp)
-    * [Building a model .jar file using the DLC compiler](#build-jar)
+    * [Building a model .jar file using the IBM zDLC compiler](#build-jar)
     * [Building Java programs to call the model](#run-java)
     * [Running the Python example](#run-python)
 * [IBM Z Integrated Accelerator for AI](#nnpa-overview)
@@ -50,8 +50,8 @@ is located at [IBM Z and LinuxONE Container Registry](https://ibm.github.io/ibm-
 You can pull the image as shown in the following code block:
 
 ```
-DLC_IMAGE_ID=icr.io/ibmz/onnx-mlir:[version]
-docker pull ${DLC_IMAGE_ID}
+ZDLC_IMAGE_ID=icr.io/ibmz/onnx-mlir:[version]
+docker pull ${ZDLC_IMAGE_ID}
 ```
 Set `[version]` based on the version available in IBM Z and
 LinuxONE Container Registry. We will use this environment variable to simplify
@@ -64,7 +64,7 @@ Running the IBM Z Deep Learning Compiler container image with no parameters
 shows the complete help for the IBM Z Deep Learning Compiler.
 
 ```
-docker run --rm ${DLC_IMAGE_ID}
+docker run --rm ${ZDLC_IMAGE_ID}
 ```
 
 Note the command line entry point for the IBM Z Deep Learning Compiler is the
@@ -103,11 +103,13 @@ used in the examples.
 Use the `--EmitLib` option to build a `.so` shared library of the mnist-8 model:
 
 ```
-docker run --rm -v ${MODEL_DIR}:/workdir:z ${DLC_IMAGE_ID} --EmitLib --O3 --mcpu=z14 --mtriple=s390x-ibm-loz mnist-8.onnx
+MODEL_NAME=mnist-8
+docker run --rm -v ${MODEL_DIR}:/workdir:z ${ZDLC_IMAGE_ID} --EmitLib --O3 --mcpu=z14 --mtriple=s390x-ibm-loz ${MODEL_NAME}.onnx
 ```
 
 | Command<br>and<br>Parameters | Description |
 | ----------- | -------------------------------------------------------- |
+| MODEL_NAME=mnist-8 | Name of the model to compile without ending suffix. |
 | docker run | Run the container image. |
 | --rm | Delete the container after running the command. |
 | -v ${MODEL_DIR}:/workdir:z | The host bind mount points to the directory with the model ONNX file. `:z` is required to share the volume if SELinux is installed. |
@@ -115,7 +117,7 @@ docker run --rm -v ${MODEL_DIR}:/workdir:z ${DLC_IMAGE_ID} --EmitLib --O3 --mcpu
 | --O3 | Optimize to the highest level. |
 | --mcpu=z14 | The minimum CPU architecture (for generated code instructions). |
 | --mtriple=s390x-ibm-loz | The target architecture for generated code. |
-| mnist-8.onnx | Build the `.so` shared library for the MNIST model. |
+| ${MODEL_NAME}.onnx | Builds the `.so` shared library from the specified ONNX file. |
 
 The built `.so` shared library is written to the host bind mount location.
 
@@ -137,7 +139,7 @@ to copy files.
 ```
 BUILD_DIR=${ZDLC_DIR}/build
 mkdir -p ${BUILD_DIR}
-docker run --rm -v ${BUILD_DIR}:/files:z --entrypoint '/usr/bin/bash' ${DLC_IMAGE_ID} -c "cp -r /usr/local/{include,lib} /files"
+docker run --rm -v ${BUILD_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE_ID} -c "cp -r /usr/local/{include,lib} /files"
 ```
 
 | Command<br>and<br>Parameters | Description |
@@ -164,8 +166,8 @@ The setup steps have been completed. Use the `g++` image and the
 ONNX-MLIR C++ Runtime API files to build the program.
 
 ```
-cp ${MODEL_DIR}/mnist-8.so ${CODE_DIR}
-docker run --rm -v ${CODE_DIR}:/code:z -v ${BUILD_DIR}:/build:z ${GCC_IMAGE_ID} g++ -std=c++11 -O3 -I /build/include /code/deep_learning_compiler_run_model_example.cpp -l:mnist-8.so -L/code -Wl,-rpath='$ORIGIN' -o /code/deep_learning_compiler_run_model_example
+cp ${MODEL_DIR}/${MODEL_NAME}.so ${CODE_DIR}
+docker run --rm -v ${CODE_DIR}:/code:z -v ${BUILD_DIR}:/build:z ${GCC_IMAGE_ID} g++ -std=c++11 -O3 -I /build/include /code/deep_learning_compiler_run_model_example.cpp -l:{MODEL_NAME}.so -L/code -Wl,-rpath='$ORIGIN' -o /code/deep_learning_compiler_run_model_example
 ```
 
 The following table explains the command line:
@@ -185,7 +187,7 @@ The following table explains the `g++` command line:
 | -std=c++11 -O3 | `g++` compiler options (See the `man g++` help for additional information.). |
 | -I /build/include | This is the location of the include header files. |
 | /code/deep_learning_compiler_run_model_example.cpp | The example program to build. |
-| -l:mnist-8.so | The model `.so` shared library that was previously built. |
+| -l:{MODEL_NAME}.so | The model `.so` shared library that was previously built. |
 | -L/code | Tell the `g++` linker where to find the model `.so` shared library. |
 | -Wl,-rpath='$ORIGIN' | (This is a very important parameter for correctly building the C++ example program.) The GNU loader (LD) uses the `rpath` to locate the model `.so` file when the program is run. (See the `man ld.so` help for additional information.) |
 | -o /code/deep_learning_compiler_run_model_example | Tell the `g++` linker the name of the built program. |
@@ -201,22 +203,24 @@ With this example, the program is linked to the built model and is run
 in the container. The expected program output is ten random float values
 (because the input was random) from the MNIST model.
 
-### Building a model .jar file using the DLC compiler <a id="build-jar"></a>
+### Building a model .jar file using the IBM zDLC compiler <a id="build-jar"></a>
 
 Use the `--EmitJNI` option to build a jar file of the model. This example is
 for the resnet50-caffe2-v1-8 ONNX model:
 
 ```
-docker run --rm -v ${MODEL_DIR}:/workdir:z ${DLC_IMAGE_ID} --EmitJNI --O3 --mcpu=z14 --mtriple=s390x-ibm-loz resnet50-caffe2-v1-8.onnx
+MODEL_NAME=resnet50-caffe2-v1-8
+docker run --rm -v ${MODEL_DIR}:/workdir:z ${ZDLC_IMAGE_ID} --EmitJNI --O3 --mcpu=z14 --mtriple=s390x-ibm-loz ${MODEL_NAME}.onnx
 ```
 
 | Command<br>and<br>Parameters | Description |
 | ----------- | -------------------------------------------------------- |
+| MODEL_NAME=resnet50-caffe2-v1-8 | Name of the model to compile without ending suffix. |
 | docker run | Run the container image. |
 | --rm | Delete the container after running the command. |
 | -v ${MODEL_DIR}:/workdir:z | The host bind mount points to the directory with the model ONNX file. `:z` is required to share the volume if SELinux is installed. |
 | --EmitJNI | Build the jar file of the model. |
-| resnet50-caffe2-v1-8.onnx | Build the jar file for the resnet50-caffe2-v1-8 model. |
+| ${MODEL_NAME}.onnx | Builds the `.jar` shared library from the specified ONNX file.|
 
 The built jar file is written to the host bind mount location.
 
@@ -234,9 +238,9 @@ from the container image. Run these commands from the command line
 to copy files.
 
 ```
-BUILD_DIR=${ZDLC_DIR}/zDLC/build
+BUILD_DIR=${ZDLC_DIR}/build
 mkdir -p ${BUILD_DIR}
-docker run --rm -v ${BUILD_DIR}:/files:z --entrypoint '/usr/bin/bash' ${DLC_IMAGE_ID} -c "cp -r /usr/local/{include,lib} /files"
+docker run --rm -v ${BUILD_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE_ID} -c "cp -r /usr/local/{include,lib} /files"
 ```
 | Command<br>and<br>Parameters | Description |
 | ----------- | -------------------------------------------------------- |
@@ -279,8 +283,8 @@ The program is now ready to be run from the command line. When run, the program
 will inference the model with randomly generated test data values.
 
 ```
-cp ${MODEL_DIR}/resnet50-caffe2-v1-8.jar ${CODE_DIR}
-docker run --rm -v ${CODE_DIR}:/code:z ${JDK_IMAGE_ID} java -classpath /code/class:/code/resnet50-caffe2-v1-8.jar deep_learning_compiler_run_model_example
+cp ${MODEL_DIR}/${MODEL_NAME}.jar ${CODE_DIR}
+docker run --rm -v ${CODE_DIR}:/code:z ${JDK_IMAGE_ID} java -classpath /code/class:/code/${MODEL_NAME}.jar deep_learning_compiler_run_model_example
 ```
 
 With this example, the Java `classpath` contains the paths for the host
@@ -307,7 +311,7 @@ Next, copy the PyRuntime library out of the docker container using:
 ```
 LIB_DIR=${ZDLC_DIR}/lib
 mkdir -p ${LIB_DIR}
-docker run --rm -v ${LIB_DIR}:/files:z --entrypoint '/usr/bin/bash' ${DLC_IMAGE_ID} -c "cp /usr/local/lib/PyRuntime.cpython-*-s390x-linux-gnu.so /files"
+docker run --rm -v ${LIB_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE_ID} -c "cp /usr/local/lib/PyRuntime.cpython-*-s390x-linux-gnu.so /files"
 ```
 
 | Command<br>and<br>Parameters | Description |
@@ -348,7 +352,7 @@ MODEL_DIR=${ZDLC_DIR}/models
 CODE_DIR=${ZDLC_DIR}/code
 ```
 ```
-docker run --rm -v ${LIB_DIR}:/build/lib:z -v ${CODE_DIR}:/code:z -v ${MODEL_DIR}:/model:z --env PYTHONPATH=/build/lib zdlc-python-example:latest /code/deep_learning_compiler_run_model_python.py
+docker run --rm -v ${LIB_DIR}:/build/lib:z -v ${CODE_DIR}:/code:z -v ${MODEL_DIR}:/models:z --env PYTHONPATH=/build/lib zdlc-python-example:latest /code/deep_learning_compiler_run_model_python.py /models/${MODEL_NAME}.so
 ```
 
 | Command<br>and<br>Parameters | Description |
@@ -410,14 +414,15 @@ Using the [`.so shared library example`](#build-so), the command line to compile
 models that take advantage of the Integrated Accelerator for AI is:
 
 ```
-docker run --rm -v ${MODEL_DIR}:/workdir:z ${DLC_IMAGE_ID} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA mnist-8.onnx
+MODEL_NAME=mnist-8
+docker run --rm -v ${MODEL_DIR}:/workdir:z ${ZDLC_IMAGE_ID} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA ${MODEL_NAME}.onnx
 ```
 
 Once the model is built to use the IBM Z Integrated Accelerator for AI,
 no changes are required on the command line to run the model:
 
 ```
-cp ${MODEL_DIR}/mnist-8.so ${CODE_DIR}
+cp ${MODEL_DIR}/${MODEL_NAME}.so ${CODE_DIR}
 docker run --rm -v ${CODE_DIR}:/code:z ${GCC_IMAGE_ID} /code/deep_learning_compiler_run_model_example
 ```
 
