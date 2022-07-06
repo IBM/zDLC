@@ -1,50 +1,83 @@
+import argparse
 import json
-import os
 import numpy as np
+import os
+import sys
+
 from PyRuntime import ExecutionSession
 
-class DLCModelExample:
 
-    def __init__(self):
-        model_name = '/model/mobilenetv2-7.so'
-        if os.path.exists(model_name):
-            self.model = model_name
-        else:
-            raise FileNotFoundError("The compiled model was not found. Please reference instructions on how to build a model and try again.")
+def process_parameters():
+    parser = argparse.ArgumentParser("IBM zDLC Python example")
+    parser.add_argument("model_so",
+                        help=".so Compiled model file")
+    return parser.parse_args()
 
-        # Instantiate a inference session.
-        self.session = ExecutionSession(self.model)
+def get_np_type(signature_type):
+    type = {
+        "f32": "float32"
+    }
 
-        # Load the input tensor dimensions.
-        # { "type" : "f32" , "dims" : [-1 , 3 , 224 , 224] , "name" : "input" }
-        # Note here that a -1 indicates a dynamic batch size in the model
-        # and that some models may require multiple input tensors.
-        self.dims = json.loads(self.session.input_signature())[0]["dims"]
+    # Model input signature use LLVM types.
+    if signature_type not in type.keys():
+            raise NotImplementedError(
+                "Example client only supports signature types: %s but got %s"
+                % (", ".join(type.keys()), signature_type))
+    return type[signature_type]
 
-        # Model input signatures use -1 to indicate sizes that can vary at runtime.
-        # For mobilenetv2-7, the batch size is dynamic. Use 1 for this
-        # dimension so we can generate input data.
-        self.dims = [1 if dim == -1 else dim for dim in self.dims]
-        np.random.seed()
+def generate_input(session):
+    # Load the input tensor dimensions from the model signature.
+    input_signature_json = json.loads(session.input_signature())
 
-        # Generate a random input tensor for our model.
-        self.input_data = np.random.rand(*self.dims).astype('float32')
+    # input for models must be a list of arrays
+    input_tensor_list = []
 
-    def run_inference(self):
-        print("The input tensor dimensions are:")
-        print(self.dims)
-        # Run the inference session.
-        outputs = self.session.run(self.input_data)
-        print("A brief overview of the output tensor is:")
-        # Look at the output tensor. Similarly, some models
-        # also generate multiple output tensors, so we need
-        # to index into the tensor list and index the first
-        # tensor.
-        print(outputs[0][0:5])
-        print("The dimensions of the output tensor are:")
-        # Review the output tensor shape.
-        print(outputs[0].shape)
+    # Generate a random input tensor for our model.
+    np.random.seed()
+    for idx, input in enumerate(input_signature_json):
+        signature_dims = input["dims"]
+        signature_type = input["type"]
+
+        # Model input signatures use -1 to indicate dimensions that can vary at
+        # runtime. Often this is a dynamic batch size but some models also have
+        # dynamic image shapes which is not supported in this example.
+        if signature_dims.count(-1) > 1:
+            raise NotImplementedError(
+                "Example client only supports a single dynamic dimension (-1). "
+                "However multiple dynamic dimensions were found for "
+                "input[%d] with shape %s"
+                % (idx, signature_dims.shape))
+
+        try:
+            np_type = get_np_type(input["type"])
+        except NotImplementedError as e:
+            raise NotImplementedError(str(e) + " in input[%d]" % idx)
+
+        # Assume remaining dynamic dimension is batch size and set to 1.
+        dims = [1 if dim == -1 else dim for dim in signature_dims]
+        input_tensor = np.random.rand(*dims).astype(np_type)
+        input_tensor_list.append(input_tensor)
+        print("input_tensor[%d] has shape %s" % (idx, input_tensor.shape))
+
+    return input_tensor_list
+
+def main():
+    args = process_parameters()
+    if not os.path.exists(args.model_so):
+        raise FileNotFoundError(
+            "The compiled model was not found. Please reference instructions "
+            "on how to compile a model and try again.")
+
+    # Instantiate a inference session.
+    session = ExecutionSession(args.model_so)
+
+    # Run the model.
+    input_tensor_list = generate_input(session)
+    output_tensor_list = session.run(input_tensor_list)
+
+    for idx, output_tensor in enumerate(output_tensor_list):
+        print("output_tensor[%d] has shape %s and values:\n%s"
+              % (idx, output_tensor.shape, output_tensor))
 
 if __name__ == '__main__':
-    model_example = DLCModelExample()
-    model_example.run_inference()
+    main()
