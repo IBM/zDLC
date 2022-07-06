@@ -85,7 +85,7 @@ OMTensorList* generate_input(std::vector<OMTensor *>& input_tensor_vector){
 
         // Add input tensor to input list
         // Use CreateWithOwnership(true) in this case so the data array is
-        // destoryed with the OMTensor object later.
+        // destroyed with the OMTensor object later.
         OMTensor *input_tensor = omTensorCreateWithOwnership(
             input_data, input_shape.data(), input_shape.size(),
             ONNX_TYPE_FLOAT, true);
@@ -93,8 +93,8 @@ OMTensorList* generate_input(std::vector<OMTensor *>& input_tensor_vector){
     }
 
     // Use CreateWithOwnership(false) in this case so the OMTensors are NOT
-    // destoryed with the OMTensorList object. They will be implicitly
-    // destoryed when the input_tensor_vector falls out of its original scope.
+    // destroyed with the OMTensorList object. They will be implicitly
+    // destroyed when the input_tensor_vector falls out of its original scope.
     return omTensorListCreateWithOwnership(
         input_tensor_vector.data(), input_tensor_vector.size(), false);
 }
