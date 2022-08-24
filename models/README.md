@@ -15,8 +15,6 @@ The following list of ONNX models from the [ONNX Model Zoo](https://github.com/o
 
 | Model Group | Model |
 | ------------------ | --------------- |
-| Bert-squad | [bertsquad-10](https://github.com/onnx/models/tree/main/text/machine_comprehension/bert-squad) |
-|  | [bertsquad-12](https://github.com/onnx/models/tree/main/text/machine_comprehension/bert-squad) |
 | Alexnet | [bvlcalexnet-6](https://github.com/onnx/models/tree/main/vision/classification/alexnet) |
 |  | [bvlcalexnet-7](https://github.com/onnx/models/tree/main/vision/classification/alexnet) |
 |  | [bvlcalexnet-8](https://github.com/onnx/models/tree/main/vision/classification/alexnet) |
@@ -33,6 +31,7 @@ The following list of ONNX models from the [ONNX Model Zoo](https://github.com/o
 |  | [densenet-7](https://github.com/onnx/models/tree/main/vision/classification/densenet-121) |
 |  | [densenet-8](https://github.com/onnx/models/tree/main/vision/classification/densenet-121) |
 |  | [densenet-9](https://github.com/onnx/models/tree/main/vision/classification/densenet-121) |
+|  | [densenet-12](https://github.com/onnx/models/tree/main/vision/classification/densenet-121) |
 | Efficientnet-lite4 | [efficientnet-lite4-11](https://github.com/onnx/models/tree/main/vision/classification/efficientnet-lite4) |
 | Fast_neural_style | [candy-8](https://github.com/onnx/models/tree/main/vision/style_transfer/fast_neural_style) |
 |  | [candy-9](https://github.com/onnx/models/tree/main/vision/style_transfer/fast_neural_style) |
@@ -60,6 +59,7 @@ The following list of ONNX models from the [ONNX Model Zoo](https://github.com/o
 |  | [inception-v2-9](https://github.com/onnx/models/tree/main/vision/classification/inception_and_googlenet/inception_v2) |
 | Mnist | [mnist-7](https://github.com/onnx/models/tree/main/vision/classification/mnist) |
 |  | [mnist-8](https://github.com/onnx/models/tree/main/vision/classification/mnist) |
+|  | [mnist-12](https://github.com/onnx/models/tree/main/vision/classification/mnist) |
 | Mobilenet | [mobilenetv2-7](https://github.com/onnx/models/tree/main/vision/classification/mobilenet) |
 | Rcnn_ilsvrc13 | [rcnn-ilsvrc13-6](https://github.com/onnx/models/tree/main/vision/classification/rcnn_ilsvrc13) |
 |  | [rcnn-ilsvrc13-7](https://github.com/onnx/models/tree/main/vision/classification/rcnn_ilsvrc13) |
@@ -109,6 +109,7 @@ The following list of ONNX models from the [ONNX Model Zoo](https://github.com/o
 |  | [vgg19-caffe2-8](https://github.com/onnx/models/tree/main/vision/classification/vgg) |
 |  | [vgg19-caffe2-9](https://github.com/onnx/models/tree/main/vision/classification/vgg) |
 | Yolov3 | [yolov3-10](https://github.com/onnx/models/tree/main/vision/object_detection_segmentation/yolov3) |
+|  | [yolov3-12](https://github.com/onnx/models/tree/main/vision/object_detection_segmentation/yolov3) |
 | Zfnet-512 | [zfnet512-6](https://github.com/onnx/models/tree/main/vision/classification/zfnet-512) |
 |  | [zfnet512-7](https://github.com/onnx/models/tree/main/vision/classification/zfnet-512) |
 |  | [zfnet512-8](https://github.com/onnx/models/tree/main/vision/classification/zfnet-512) |
