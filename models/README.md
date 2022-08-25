@@ -15,8 +15,6 @@ The following list of ONNX models from the [ONNX Model Zoo](https://github.com/o
 
 | Model Group | Model |
 | ------------------ | --------------- |
-| Bert-squad | [bertsquad-10](https://github.com/onnx/models/tree/main/text/machine_comprehension/bert-squad) |
-|  | [bertsquad-12](https://github.com/onnx/models/tree/main/text/machine_comprehension/bert-squad) |
 | Alexnet | [bvlcalexnet-6](https://github.com/onnx/models/tree/main/vision/classification/alexnet) |
 |  | [bvlcalexnet-7](https://github.com/onnx/models/tree/main/vision/classification/alexnet) |
 |  | [bvlcalexnet-8](https://github.com/onnx/models/tree/main/vision/classification/alexnet) |
