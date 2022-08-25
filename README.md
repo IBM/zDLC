@@ -7,15 +7,19 @@
 * [Building the code samples](#code-samples)
     * [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)
     * [Building C++ programs to call the model](#run-cpp)
-    * [Building a model .jar file using the IBM zDLC compiler](#build-jar)
+    * [Building a model .jar file using the IBM zDLC](#build-jar)
     * [Building Java programs to call the model](#run-java)
     * [Running the Python example](#run-python)
 * [IBM Z Integrated Accelerator for AI](#nnpa-overview)
     * [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)
+    * [Performance tips for IBM Z Integrated Accelerator for AI](#nnpa-tips)
     * [ONNX Operators that support the IBM Z Integrated Accelerator for AI](#nnpa-ops)
-* [Deleting the container image](#del-image)
+* [Removing IBM Z Deep Learning Compiler](#del-image)
 
-## Overview <a id="overview"></a>
+<br>
+
+# Overview <a id="overview"></a>
+
 The IBM Z Deep Learning Compiler uses [ONNX-MLIR](http://onnx.ai/onnx-mlir/) to
 compile .onnx deep learning AI models into shared libaries. The shared libaries
 can then be integrated into C, C++, Java, or Python applications.
@@ -41,6 +45,8 @@ These are the general end-to-end steps to use IBM zDLC:
 1. Import the compiled model into your application.
 1. Run your application.
 
+<br>
+
 ## Download the IBM Z Deep Learning Compiler container image <a id="container"></a>
 
 Downloading the IBM Z Deep Learning Compiler container image requires
@@ -57,6 +63,7 @@ Set `[version]` based on the version available in IBM Z and
 LinuxONE Container Registry. We will use this environment variable to simplify
 the container commands throughout the rest of this document.
 
+<br>
 
 ## IBM Z Deep Learning Compiler command line interface help <a id="cli-help"></a>
 
@@ -79,7 +86,10 @@ Note the command line entry point for the IBM Z Deep Learning Compiler is the
 The help for the IBM Z Deep Learning Compiler can also be displayed by
 adding the `--help` option to the command line.
 
-## Building the code samples <a id="code-samples"></a>
+<br>
+
+# Building the code samples <a id="code-samples"></a>
+
 The easiest way to follow the examples is to clone the example code repository:
 
 ```
@@ -99,7 +109,10 @@ The code examples build three deep learning models from the ONNX Model Zoo. See
 [Obtaining the models](models/README.md#obtain-models) to download the models
 used in the examples.
 
-### Building a model .so using the IBM Z Deep Learning Compiler <a id="build-so"></a>
+<br>
+
+## Building a model .so using the IBM Z Deep Learning Compiler <a id="build-so"></a>
+
 Use the `--EmitLib` option to build a `.so` shared library of the mnist-8 model:
 
 ```
@@ -123,7 +136,9 @@ The built `.so` shared library is written to the host bind mount location.
 
 The ONNX models for the examples can be found in the [ONNX Model Zoo](https://github.com/onnx/models).
 
-### Building C++ programs to call the model <a id="run-cpp"></a>
+<br>
+
+## Building C++ programs to call the model <a id="run-cpp"></a>
 
 The example program is written in the C++ programming language and compiled
 with the `g++` compiler. The example program calls the IBM Z Deep Learning
@@ -224,7 +239,9 @@ docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE_ID} --EmitJNI --O3 
 
 The built jar file is written to the host bind mount location.
 
-### Building Java programs to call the model <a id="run-java"></a>
+<br>
+
+## Building Java programs to call the model <a id="run-java"></a>
 
 The example program is written in the Java programming language and compiled
 with a Java JDK. The example program calls the ONNX-MLIR Java Runtime APIs
@@ -292,7 +309,9 @@ bind mounts when run within the container. The `classpath` needs to be
 adjusted if the Java program is run directly from the command line. The
 expected program output is a list of float values from the RESNET50 model.
 
-### Running the Python example <a id="run-python"></a>
+<br>
+
+## Running the Python example <a id="run-python"></a>
 
 This example program is written in Python and runs using the Python runtime.
 The example program calls the ONNX-MLIR Runtime APIs by leveraging
@@ -380,7 +399,10 @@ The dimensions of the output tensor are:
 ```
 Note that the output values will be random since the input values are random.
 
-## IBM Z Integrated Accelerator for AI <a id="nnpa-overview"></a>
+<br>
+
+# IBM Z Integrated Accelerator for AI <a id="nnpa-overview"></a>
+
 IBM z16 systems include a new Integrated Accelerator for AI to enable real-time
 AI for transaction processing at scale. The IBM Z Deep Learning Compiler helps
 your new and existing deep learning models take advantage of this new
@@ -393,7 +415,9 @@ IBM zSystems which have the accelerator. Machines which have an accelerator
 can run models compiled without acceleration but those models will not take
 advantage of the accelerator.
 
-### Compiling models to utilize the IBM Z Integrated Accelerator for AI <a id="nnpa-compile"></a>
+<br>
+
+## Compiling models to utilize the IBM Z Integrated Accelerator for AI <a id="nnpa-compile"></a>
 
 Like other compilers, the IBM zDLC's default settings compile models so that
 they run on as many systems as possible. To use machine specific features,
@@ -430,7 +454,29 @@ The same flags are required for compiling shared libraries for any language
 including Java and Python. Likewise, no additional steps are required when
 running the shared libraries.
 
-### ONNX Operators that support the IBM Z Integrated Accelerator for AI <a id="nnpa-ops"></a>
+<br>
+
+## Performance tips for IBM Z Integrated Accelerator for AI <a id="nnpa-tips"></a>
+
+When compiling models for the IBM Z Integrated Accelerator for AI, IBM zDLC
+optimizes models to take advantage of the accelerator when possible. In order to
+support a wide range of models, IBM zDLC will compile models so operators not
+supported by the accelerator, or operators with unsupported settings, run
+on the CPU.
+
+When running models with multiple dynamic dimensions (i.e. models with
+multiple `-1` in their input signatures), using the `--shapeInformation` flag
+to set those dimensions to static values may improve model runtime performance.
+For some models, this allows the IBM zDLC to better determine at compile time
+which operators will be compatible with the accelerator.
+
+More information can be found in `onnx-mlir --help`. The full text can be found
+in the `ONNX-MLIR Options` section.
+
+<br>
+
+## ONNX Operators that support the IBM Z Integrated Accelerator for AI <a id="nnpa-ops"></a>
+
 When compiled to use the Integrated Accelerator for AI, the following ONNX
 Operators use the accelerator. Other ONNX Operators use CPU.
 
@@ -459,7 +505,9 @@ Operators use the accelerator. Other ONNX Operators use CPU.
 * Sum
 * Tanh
 
-## Deleting the container image <a id="del-image"></a>
+<br>
+
+# Removing IBM Z Deep Learning Compiler <a id="del-image"></a>
 
 First, find the `IMAGE ID` for the container image.
 
