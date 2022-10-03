@@ -13,6 +13,8 @@
 * [IBM Z Integrated Accelerator for AI](#nnpa-overview)
     * [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)
     * [Performance tips for IBM Z Integrated Accelerator for AI](#nnpa-tips)
+        * [Specifying input tensor dimensions](#nnpa-tips-shape)
+        * [View operation targets at compile time](#nnpa-tips-ops-target)
     * [ONNX Operators that support the IBM Z Integrated Accelerator for AI](#nnpa-ops)
 * [Removing IBM Z Deep Learning Compiler](#del-image)
 
@@ -56,8 +58,8 @@ is located at [IBM Z and LinuxONE Container Registry](https://ibm.github.io/ibm-
 You can pull the image as shown in the following code block:
 
 ```
-ZDLC_IMAGE_ID=icr.io/ibmz/onnx-mlir:[version]
-docker pull ${ZDLC_IMAGE_ID}
+ZDLC_IMAGE=icr.io/ibmz/onnx-mlir:[version]
+docker pull ${ZDLC_IMAGE}
 ```
 Set `[version]` based on the version available in IBM Z and
 LinuxONE Container Registry. We will use this environment variable to simplify
@@ -71,7 +73,7 @@ Running the IBM Z Deep Learning Compiler container image with no parameters
 shows the complete help for the IBM Z Deep Learning Compiler.
 
 ```
-docker run --rm ${ZDLC_IMAGE_ID}
+docker run --rm ${ZDLC_IMAGE}
 ```
 
 Note the command line entry point for the IBM Z Deep Learning Compiler is the
@@ -117,7 +119,7 @@ Use the `--EmitLib` option to build a `.so` shared library of the mnist-8 model:
 
 ```
 ZDLC_MODEL_NAME=mnist-8
-docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE_ID} --EmitLib --O3 --mcpu=z14 --mtriple=s390x-ibm-loz ${ZDLC_MODEL_NAME}.onnx
+docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z14 --mtriple=s390x-ibm-loz ${ZDLC_MODEL_NAME}.onnx
 ```
 
 | Command<br>and<br>Parameters | Description |
@@ -154,7 +156,7 @@ to copy files.
 ```
 ZDLC_BUILD_DIR=${ZDLC_DIR}/build
 mkdir -p ${ZDLC_BUILD_DIR}
-docker run --rm -v ${ZDLC_BUILD_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE_ID} -c "cp -r /usr/local/{include,lib} /files"
+docker run --rm -v ${ZDLC_BUILD_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE} -c "cp -r /usr/local/{include,lib} /files"
 ```
 
 | Command<br>and<br>Parameters | Description |
@@ -225,7 +227,7 @@ for the resnet50-caffe2-v1-8 ONNX model:
 
 ```
 ZDLC_MODEL_NAME=resnet50-caffe2-v1-8
-docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE_ID} --EmitJNI --O3 --mcpu=z14 --mtriple=s390x-ibm-loz ${ZDLC_MODEL_NAME}.onnx
+docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitJNI --O3 --mcpu=z14 --mtriple=s390x-ibm-loz ${ZDLC_MODEL_NAME}.onnx
 ```
 
 | Command<br>and<br>Parameters | Description |
@@ -257,7 +259,7 @@ to copy files.
 ```
 ZDLC_BUILD_DIR=${ZDLC_DIR}/build
 mkdir -p ${ZDLC_BUILD_DIR}
-docker run --rm -v ${ZDLC_BUILD_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE_ID} -c "cp -r /usr/local/{include,lib} /files"
+docker run --rm -v ${ZDLC_BUILD_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE} -c "cp -r /usr/local/{include,lib} /files"
 ```
 | Command<br>and<br>Parameters | Description |
 | ----------- | -------------------------------------------------------- |
@@ -330,7 +332,7 @@ Next, copy the PyRuntime library out of the docker container using:
 ```
 ZDLC_LIB_DIR=${ZDLC_DIR}/lib
 mkdir -p ${ZDLC_LIB_DIR}
-docker run --rm -v ${ZDLC_LIB_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE_ID} -c "cp /usr/local/lib/PyRuntime.cpython-*-s390x-linux-gnu.so /files"
+docker run --rm -v ${ZDLC_LIB_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE} -c "cp /usr/local/lib/PyRuntime.cpython-*-s390x-linux-gnu.so /files"
 ```
 
 | Command<br>and<br>Parameters | Description |
@@ -439,7 +441,7 @@ models that take advantage of the Integrated Accelerator for AI is:
 
 ```
 ZDLC_MODEL_NAME=mnist-8
-docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE_ID} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA ${ZDLC_MODEL_NAME}.onnx
+docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA ${ZDLC_MODEL_NAME}.onnx
 ```
 
 Once the model is built to use the IBM Z Integrated Accelerator for AI,
@@ -464,46 +466,43 @@ support a wide range of models, IBM zDLC will compile models so operators not
 supported by the accelerator, or operators with unsupported settings, run
 on the CPU.
 
+<br>
+
+### Specifying input tensor dimensions <a id="nnpa-tips-shape"></a>
+
 When running models with multiple dynamic dimensions (i.e. models with
 multiple `-1` in their input signatures), using the `--shapeInformation` flag
 to set those dimensions to static values may improve model runtime performance.
 For some models, this allows the IBM zDLC to better determine at compile time
-which operators will be compatible with the accelerator.
+which operations will be compatible with the accelerator.
 
-More information can be found in `onnx-mlir --help`. The full text can be found
-in the `ONNX-MLIR Options` section.
+For example, if a vision model has an input tensor with shape `(-1, -1, -1, 3)`
+representing `(batch, height, width, channels)`, you may see increased
+performance by specifying the `height` and `width` dimensions at compile time.
+To do so, add `--shapeInformation 0:-1x640x480x3` when compiling the model.
+If the model has mutliple input tensors, those can also be specified using
+`--shapeInformation 0:-1x640x480x3,1:-1x100,2:... `.
+
+The `--shapeInformation` flag can be used with `--onnx-op-stats` to determine
+if specifying the shape enables more operations to run on the IBM Z Integrated
+Accelerator for AI. See [View operation targets at compile time](#nnpa-tips-ops-target).
+
+<br>
+
+### View operation targets at compile time<a id="nnpa-tips-ops-target"></a>
+
+The IBM Z Deep Learning Compiler can optionally report the number of Operators
+that will run on CPU vs the IBM Z Integrated Accelerator for AI at compile time.
+
+When compiling the model, add `--onnx-op-stats [TXT|JSON]`. Operations that
+begin with `onnx.*` will execute on CPU and operations that begin with `zhigh.*`
+are related to the IBM Z Integrated Accelerator for AI.
 
 <br>
 
 ## ONNX Operators that support the IBM Z Integrated Accelerator for AI <a id="nnpa-ops"></a>
 
-When compiled to use the Integrated Accelerator for AI, the following ONNX
-Operators use the accelerator. Other ONNX Operators use CPU.
-
-* Add
-* AveragePool
-* BatchNormalization
-* Conv
-* Div
-* Exp
-* Gemm
-* GlobalAveragePool
-* GRU - must use tanh activation. Otherwise CPU is used.
-* Log
-* LogSoftmax
-* LSTM - must use tanh activation. Otherwise CPU is used.
-* MatMul
-* Max
-* MaxPool
-* Min
-* Mul
-* ReduceMean
-* Relu
-* Sigmoid
-* Softmax
-* Sub
-* Sum
-* Tanh
+For the most up to date list, see [Supported ONNX Operation for Target NNPA](https://github.com/onnx/onnx-mlir/blob/main/docs/SupportedONNXOps-NNPA.md) in the onnx-mlir repository.
 
 <br>
 
