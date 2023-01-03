@@ -42,7 +42,7 @@ that have been built and verified with the IBM Z Deep Learning Compiler.
 
 These are the general end-to-end steps to use IBM zDLC:
 1. Create, convert, or download an ONNX model.
-1. Download the onnx-mlir image from [IBM Z and LinuxOne Container Registry](https://ibm.github.io/ibm-z-oss-hub/main/main.html).
+1. Download the zdlc image from [IBM Z and LinuxOne Container Registry](https://ibm.github.io/ibm-z-oss-hub/main/main.html).
 1. Use the image to compile a shared library of the model for your desired language.
 1. Import the compiled model into your application.
 1. Run your application.
@@ -58,7 +58,7 @@ is located at [IBM Z and LinuxONE Container Registry](https://ibm.github.io/ibm-
 You can pull the image as shown in the following code block:
 
 ```
-ZDLC_IMAGE=icr.io/ibmz/onnx-mlir:[version]
+ZDLC_IMAGE=icr.io/ibmz/zdlc:[version]
 docker pull ${ZDLC_IMAGE}
 ```
 Set `[version]` based on the version available in IBM Z and
@@ -77,8 +77,8 @@ docker run --rm ${ZDLC_IMAGE}
 ```
 
 Note the command line entry point for the IBM Z Deep Learning Compiler is the
-`onnx-mlir` command. The IBM Z Deep Learning Compiler is invoked by running the
-`onnx-mlir` image with the `docker run` command.
+`zdlc` command. The IBM Z Deep Learning Compiler is invoked by running the
+`zdlc` image with the `docker run` command.
 
 | Command<br>and<br>Parameters | Description |
 | ----------- | -------------------------------------------------------- |
