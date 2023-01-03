@@ -95,7 +95,7 @@ OMTensorList* generate_input(std::vector<OMTensor *>& input_tensor_vector){
     // Use CreateWithOwnership(false) so the input_tensor_vector.data() array of
     // pointers is NOT destroyed with the OMTensorList object. It will be destroyed
     // when the input_tensor_vector falls out of its original scope.
-    // Note that the The OMTensors objects which that array points to are destroyed
+    // Note that the OMTensors objects which that array points to are destroyed
     // with the list regardless of the list's CreateWithOwnership setting.
     return omTensorListCreateWithOwnership(
         input_tensor_vector.data(), input_tensor_vector.size(), false);
