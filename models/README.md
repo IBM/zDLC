@@ -49,6 +49,8 @@ The following list of ONNX models from the [ONNX Model Zoo](https://github.com/o
 |  | [googlenet-8](https://github.com/onnx/models/tree/main/vision/classification/inception_and_googlenet/googlenet) |
 |  | [googlenet-9](https://github.com/onnx/models/tree/main/vision/classification/inception_and_googlenet/googlenet) |
 |  | [googlenet-12](https://github.com/onnx/models/tree/main/vision/classification/inception_and_googlenet/googlenet) |
+| Gpt-2 | [gpt2-10](https://github.com/onnx/models/tree/main/text/machine_comprehension/gpt-2) |
+|  | [gpt2-lm-head-10](https://github.com/onnx/models/tree/main/text/machine_comprehension/gpt-2) |
 | Inception_v1 | [inception-v1-6](https://github.com/onnx/models/tree/main/vision/classification/inception_and_googlenet/inception_v1) |
 |  | [inception-v1-7](https://github.com/onnx/models/tree/main/vision/classification/inception_and_googlenet/inception_v1) |
 |  | [inception-v1-8](https://github.com/onnx/models/tree/main/vision/classification/inception_and_googlenet/inception_v1) |
@@ -61,6 +63,7 @@ The following list of ONNX models from the [ONNX Model Zoo](https://github.com/o
 |  | [mnist-8](https://github.com/onnx/models/tree/main/vision/classification/mnist) |
 |  | [mnist-12](https://github.com/onnx/models/tree/main/vision/classification/mnist) |
 | Mobilenet | [mobilenetv2-7](https://github.com/onnx/models/tree/main/vision/classification/mobilenet) |
+|  | [mobilenetv2-10](https://github.com/onnx/models/tree/main/vision/classification/mobilenet) |
 | Rcnn_ilsvrc13 | [rcnn-ilsvrc13-6](https://github.com/onnx/models/tree/main/vision/classification/rcnn_ilsvrc13) |
 |  | [rcnn-ilsvrc13-7](https://github.com/onnx/models/tree/main/vision/classification/rcnn_ilsvrc13) |
 |  | [rcnn-ilsvrc13-8](https://github.com/onnx/models/tree/main/vision/classification/rcnn_ilsvrc13) |
@@ -96,6 +99,8 @@ The following list of ONNX models from the [ONNX Model Zoo](https://github.com/o
 |  | [squeezenet1.0-12](https://github.com/onnx/models/tree/main/vision/classification/squeezenet) |
 |  | [squeezenet1.1-7](https://github.com/onnx/models/tree/main/vision/classification/squeezenet) |
 | Sub_pixel_cnn_2016 | [super-resolution-10](https://github.com/onnx/models/tree/main/vision/super_resolution/sub_pixel_cnn_2016) |
+| T5 | [t5-encoder-12](https://github.com/onnx/models/tree/main/text/machine_comprehension/t5) |
+|  | [t5-decoder-with-lm-head-12](https://github.com/onnx/models/tree/main/text/machine_comprehension/t5) |
 | Tiny-yolov2 | [tinyyolov2-7](https://github.com/onnx/models/tree/main/vision/object_detection_segmentation/tiny-yolov2) |
 |  | [tinyyolov2-8](https://github.com/onnx/models/tree/main/vision/object_detection_segmentation/tiny-yolov2) |
 | Tiny-yolov3 | [tiny-yolov3-11](https://github.com/onnx/models/tree/main/vision/object_detection_segmentation/tiny-yolov3) |
@@ -108,6 +113,7 @@ The following list of ONNX models from the [ONNX Model Zoo](https://github.com/o
 |  | [vgg19-caffe2-7](https://github.com/onnx/models/tree/main/vision/classification/vgg) |
 |  | [vgg19-caffe2-8](https://github.com/onnx/models/tree/main/vision/classification/vgg) |
 |  | [vgg19-caffe2-9](https://github.com/onnx/models/tree/main/vision/classification/vgg) |
+| Yolov2-coco | [yolov2-coco-9](https://github.com/onnx/models/tree/main/vision/object_detection_segmentation/yolov2-coco) |
 | Yolov3 | [yolov3-10](https://github.com/onnx/models/tree/main/vision/object_detection_segmentation/yolov3) |
 |  | [yolov3-12](https://github.com/onnx/models/tree/main/vision/object_detection_segmentation/yolov3) |
 | Zfnet-512 | [zfnet512-6](https://github.com/onnx/models/tree/main/vision/classification/zfnet-512) |
