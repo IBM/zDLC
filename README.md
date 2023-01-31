@@ -80,7 +80,7 @@ Note the zdlc examples require that ZDLC_IMAGE and ZDLC_DIR be set.
 | Variable | Description |
 | -------- | ----------- |
 |ZDLC_IMAGE=icr.io/ibmz/zdlc:[version]|Set [version] based on the desired version in IBM Z and LinuxONE Container Registry.<br><br>Used in:<br>• [IBM Z Deep Learning Compiler command line interface help](#cli-help)<br>• [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building a model .jar file using the IBM zDLC](#build-jar)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)|
-|ZDLC_DIR=$(pwd)/zDLC|$(pwd) resolves to the current working directory.  Which ensure the current working directory contains the downloaded IBM Z Deep Learning Compiler container image before setting the ZLDC_DIR environment variable.<br><br>Used in:<br>• [Environment variables](#setvars)<br>• [Running the Python example](#run-python)|
+|ZDLC_DIR=$(pwd)/zDLC|$(pwd) resolves to the current working directory.  Ensure the current working directory contains the downloaded IBM Z Deep Learning Compiler container image before setting the ZLDC_DIR environment variable.<br><br>Used in:<br>• [Environment variables](#setvars)<br>• [Running the Python example](#run-python)|
 <br>
 
 ## Environment variables <a id="setvars"></a>
