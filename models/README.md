@@ -6,9 +6,7 @@ of the repository is not required. Instead, follow the [git-lfs instructions](ht
 
 ## Example models
 The following models are used in the examples:
-1. [mnist-8](https://github.com/onnx/models/tree/main/vision/classification/mnist)
-1. [resnet50-caffe2-v1-8](https://github.com/onnx/models/tree/main/vision/classification/resnet)
-1. [mobilenetv2-7.onnx](https://github.com/onnx/models/tree/main/vision/classification/mobilenet/model)
+1. [mnist-12](https://github.com/onnx/models/tree/main/vision/classification/mnist)
 
 ## Verified ONNX Model Zoo models <a id="verified-models"></a>
 The following list of ONNX models from the [ONNX Model Zoo](https://github.com/onnx/models) have been built and verified with the IBM Z Deep Learning Compiler:
