@@ -3,6 +3,7 @@
 ## Table of contents
 * [Overview](#overview)
 * [Download the IBM Z Deep Learning compiler container image](#container)
+* [Environment variables](#setvars)
 * [IBM Z Deep Learning Compiler command line interface help](#cli-help)
 * [Building the code samples](#code-samples)
     * [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)
@@ -17,7 +18,6 @@
         * [View operation targets at compile time](#nnpa-tips-ops-target)
     * [ONNX Operators that support the IBM Z Integrated Accelerator for AI](#nnpa-ops)
 * [Removing IBM Z Deep Learning Compiler](#del-image)
-
 <br>
 
 # Overview <a id="overview"></a>
@@ -46,7 +46,6 @@ These are the general end-to-end steps to use IBM zDLC:
 1. Use the image to compile a shared library of the model for your desired language.
 1. Import the compiled model into your application.
 1. Run your application.
-
 <br>
 
 ## Download the IBM Z Deep Learning Compiler container image <a id="container"></a>
@@ -54,16 +53,59 @@ These are the general end-to-end steps to use IBM zDLC:
 Downloading the IBM Z Deep Learning Compiler container image requires
 credentials for the `icr.io` registry. Information on obtaining the credentials
 is located at [IBM Z and LinuxONE Container Registry](https://ibm.github.io/ibm-z-oss-hub/main/main.html).
+<br>
 
-You can pull the image as shown in the following code block:
+Determine the desired version of the zdlc image to download from the [IBM Z and LinuxOne Container Registry](https://ibm.github.io/ibm-z-oss-hub/main/main.html).
+
+Switch to the desired directory to download the zdlc image to.
+<br>
+
+Set ZDLC_IMAGE based on the desired version and ZDLC_DIR to the current working directory where the zdlc image will be downloaded to:
 
 ```
 ZDLC_IMAGE=icr.io/ibmz/zdlc:[version]
+ZDLC_DIR=$(pwd)/zDLC
+```
+
+Pull the image as shown in the following code block:
+
+```
 docker pull ${ZDLC_IMAGE}
 ```
-Set `[version]` based on the version available in IBM Z and
-LinuxONE Container Registry. We will use this environment variable to simplify
-the container commands throughout the rest of this document.
+
+Note the zdlc examples require that ZDLC_IMAGE and ZDLC_DIR be set.
+
+<br>
+
+| Variable | Description |
+| -------- | ----------- |
+|ZDLC_IMAGE=icr.io/ibmz/zdlc:[version]|Set [version] based on the desired version in IBM Z and LinuxONE Container Registry.<br><br>Used in:<br>• [IBM Z Deep Learning Compiler command line interface help](#cli-help)<br>• [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building a model .jar file using the IBM zDLC](#build-jar)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)|
+|ZDLC_DIR=$(pwd)/zDLC|$(pwd) resolves to the current working directory.  Which ensure the current working directory contains the downloaded IBM Z Deep Learning Compiler container image before setting the ZLDC_DIR environment variable.<br><br>Used in:<br>• [Environment variables](#setvars)<br>• [Running the Python example](#run-python)|
+<br>
+
+## Environment variables <a id="setvars"></a>
+
+Set the environment variables for use with the IBM Z Deep Learning Compiler container image. The environment variables will simplify the container commands throughout the rest of this document. See the description in the table below for addidtional information.  ZDLC_DIR must be set first.  See [Download the IBM Z Deep Learning compiler container image](#container) to set if needed.
+
+```
+GCC_IMAGE_ID=icr.io/ibmz/gcc:12
+JDK_IMAGE_ID=icr.io/ibmz/openjdk:11
+ZDLC_CODE_DIR=${ZDLC_DIR}/code
+ZDLC_LIB_DIR=${ZDLC_DIR}/lib
+ZDLC_BUILD_DIR=${ZDLC_DIR}/build
+ZDLC_MODEL_DIR=${ZDLC_DIR}/models
+ZDLC_MODEL_NAME=mnist-12
+```
+
+| Variable | Description |
+| -------- | ----------- |
+|GCC_IMAGE_ID=icr.io/ibmz/gcc:12|Used in:<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)|
+|JDK_IMAGE_ID=icr.io/ibmz/openjdk:11|Used in:<br>• [Building Java programs to call the model](#run-java)|
+|ZDLC_CODE_DIR=${ZDLC_DIR}/code|Used in:<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)|
+|ZDLC_LIB_DIR=${ZDLC_DIR}/lib|Used in:<br>• [Running the Python example](#run-python)|
+|ZDLC_BUILD_DIR=${ZDLC_DIR}/build|Used in:<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building Java programs to call the model](#run-java)|
+|ZDLC_MODEL_DIR=${ZDLC_DIR}/models|Used in:<br>• [Building the code samples](#code-samples)<br>• [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building a model .jar file using the IBM zDLC](#build-jar)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)|
+|ZDLC_MODEL_NAME=mnist-12|Used in:<br>• [Building the code samples](#code-samples)<br>• [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)<br>• [Building a model .jar file using the IBM zDLC](#build-jar)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)|
 
 <br>
 
@@ -98,33 +140,32 @@ The easiest way to follow the examples is to clone the example code repository:
 git clone https://github.com/IBM/zDLC
 ```
 
-The code examples are located in the GitHub repository. After the `git clone`,
-set these environment variables on the command line.
+The code examples are located in the GitHub repository.
 
+The code examples build three deep learning models from the ONNX Model Zoo.
+You can download just the example model using:
 ```
-ZDLC_DIR=$(pwd)/zDLC
-ZDLC_MODEL_DIR=${ZDLC_DIR}/models
-ZDLC_CODE_DIR=${ZDLC_DIR}/code
+wget --directory-prefix $ZDLC_MODEL_DIR https://github.com/onnx/models/raw/main/vision/classification/mnist/model/$ZDLC_MODEL_NAME.onnx
 ```
+<br>
 
-The code examples build three deep learning models from the ONNX Model Zoo. See
-[Obtaining the models](models/README.md#obtain-models) to download the models
-used in the examples.
+or see [Obtaining the models](models/README.md#obtain-models) to download the other models from
+the model zoo. The examples use $ZDLC_MODEL_DIR as the directory and $ZDLC_MODEL_NAME specifies
+the model name (without the .onnx) in that directory.
 
 <br>
 
 ## Building a model .so using the IBM Z Deep Learning Compiler <a id="build-so"></a>
 
-Use the `--EmitLib` option to build a `.so` shared library of the mnist-8 model:
+Use the `--EmitLib` option to build a `.so` shared library of the model specified by ZDLC_MODEL_NAME in [Environment variables](#setvars):
 
 ```
-ZDLC_MODEL_NAME=mnist-8
 docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z14 --mtriple=s390x-ibm-loz ${ZDLC_MODEL_NAME}.onnx
 ```
 
 | Command<br>and<br>Parameters | Description |
 | ----------- | -------------------------------------------------------- |
-| ZDLC_MODEL_NAME=mnist-8 | Name of the model to compile without ending suffix. |
+| ZDLC_MODEL_NAME | Name of the model to compile without ending suffix. |
 | docker run | Run the container image. |
 | --rm | Delete the container after running the command. |
 | -v ${ZDLC_MODEL_DIR}:/workdir:z | The host bind mount points to the directory with the model ONNX file. `:z` is required to share the volume if SELinux is installed. |
@@ -154,7 +195,6 @@ from the container image. Run these commands from the command line
 to copy files.
 
 ```
-ZDLC_BUILD_DIR=${ZDLC_DIR}/build
 mkdir -p ${ZDLC_BUILD_DIR}
 docker run --rm -v ${ZDLC_BUILD_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE} -c "cp -r /usr/local/{include,lib} /files"
 ```
@@ -175,7 +215,6 @@ ls -laR ${ZDLC_BUILD_DIR}
 Next pull a Docker image with the `g++` compiler tools installed.
 
 ```
-GCC_IMAGE_ID=icr.io/ibmz/gcc:12
 docker pull ${GCC_IMAGE_ID}
 ```
 
@@ -218,21 +257,19 @@ docker run --rm -v ${ZDLC_CODE_DIR}:/code:z ${GCC_IMAGE_ID} /code/deep_learning_
 
 With this example, the program is linked to the built model and is run
 in the container. The expected program output is ten random float values
-(because the input was random) from the MNIST model.
+(because the input was random) from the model.
 
 ### Building a model .jar file using the IBM zDLC compiler <a id="build-jar"></a>
 
-Use the `--EmitJNI` option to build a jar file of the model. This example is
-for the resnet50-caffe2-v1-8 ONNX model:
+Use the `--EmitJNI` option to build a jar file of the model specified by ZDLC_MODEL_NAME in [Environment variables](#setvars).
 
 ```
-ZDLC_MODEL_NAME=resnet50-caffe2-v1-8
 docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitJNI --O3 --mcpu=z14 --mtriple=s390x-ibm-loz ${ZDLC_MODEL_NAME}.onnx
 ```
 
 | Command<br>and<br>Parameters | Description |
 | ----------- | -------------------------------------------------------- |
-| ZDLC_MODEL_NAME=resnet50-caffe2-v1-8 | Name of the model to compile without ending suffix. |
+| ZDLC_MODEL_NAME | Name of the model to compile without ending suffix. |
 | docker run | Run the container image. |
 | --rm | Delete the container after running the command. |
 | -v ${ZDLC_MODEL_DIR}:/workdir:z | The host bind mount points to the directory with the model ONNX file. `:z` is required to share the volume if SELinux is installed. |
@@ -257,7 +294,6 @@ from the container image. Run these commands from the command line
 to copy files.
 
 ```
-ZDLC_BUILD_DIR=${ZDLC_DIR}/build
 mkdir -p ${ZDLC_BUILD_DIR}
 docker run --rm -v ${ZDLC_BUILD_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE} -c "cp -r /usr/local/{include,lib} /files"
 ```
@@ -277,7 +313,6 @@ ls -laR ${ZDLC_BUILD_DIR}
 Pull a Java JDK image to build and run the Java example:
 
 ```
-JDK_IMAGE_ID=icr.io/ibmz/openjdk:11
 docker pull ${JDK_IMAGE_ID}
 ```
 
@@ -309,7 +344,8 @@ docker run --rm -v ${ZDLC_CODE_DIR}:/code:z ${JDK_IMAGE_ID} java -classpath /cod
 With this example, the Java `classpath` contains the paths for the host
 bind mounts when run within the container. The `classpath` needs to be
 adjusted if the Java program is run directly from the command line. The
-expected program output is a list of float values from the RESNET50 model.
+expected program output is a list of random float values (because the
+input was random) from the model.
 
 <br>
 
@@ -321,16 +357,12 @@ The example program calls the ONNX-MLIR Runtime APIs by leveraging
 which is best described in sections `Using PyRuntime` and `PyRuntime Module`
 in the linked documentation.
 
-To start, obtain `mobilenetv2-7.onnx` following the
-[models instructions](models/README.md).
-
-Once complete, compile `mobilenetv2-7` to a [.so shared library](#build-so)
-as described previously by replacing `mnist-8.onnx` with `mobilenetv2-7.onnx`.
+If not already compiled, compile the model specified by ZDLC_MODEL_NAME in [Environment variables](#setvars) to a [.so shared library](#build-so)
+as described previously.
 
 Next, copy the PyRuntime library out of the docker container using:
 
 ```
-ZDLC_LIB_DIR=${ZDLC_DIR}/lib
 mkdir -p ${ZDLC_LIB_DIR}
 docker run --rm -v ${ZDLC_LIB_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE} -c "cp /usr/local/lib/PyRuntime.cpython-*-s390x-linux-gnu.so /files"
 ```
@@ -368,10 +400,6 @@ docker build -f ${ZDLC_DIR}/docker/Dockerfile.python -t zdlc-python-example .
 
 Finally, run the Python client with the following command:
 
-```
-ZDLC_MODEL_DIR=${ZDLC_DIR}/models
-ZDLC_CODE_DIR=${ZDLC_DIR}/code
-```
 ```
 docker run --rm -v ${ZDLC_LIB_DIR}:/build/lib:z -v ${ZDLC_CODE_DIR}:/code:z -v ${ZDLC_MODEL_DIR}:/models:z --env PYTHONPATH=/build/lib zdlc-python-example:latest /code/deep_learning_compiler_run_model_python.py /models/${ZDLC_MODEL_NAME}.so
 ```
@@ -440,7 +468,6 @@ Using the [`.so shared library example`](#build-so), the command line to compile
 models that take advantage of the Integrated Accelerator for AI is:
 
 ```
-ZDLC_MODEL_NAME=mnist-8
 docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA ${ZDLC_MODEL_NAME}.onnx
 ```
 
