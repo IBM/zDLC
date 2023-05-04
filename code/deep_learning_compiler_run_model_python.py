@@ -4,7 +4,7 @@ import numpy as np
 import os
 import sys
 
-from PyRuntime import ExecutionSession
+from PyRuntime import OMExecutionSession
 
 
 def process_parameters():
@@ -69,7 +69,7 @@ def main():
             "on how to compile a model and try again.")
 
     # Instantiate a inference session.
-    session = ExecutionSession(args.model_so)
+    session = OMExecutionSession(args.model_so)
 
     # Run the model.
     input_tensor_list = generate_input(session)
