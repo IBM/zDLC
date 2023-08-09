@@ -527,7 +527,13 @@ are related to the IBM Z Integrated Accelerator for AI.
 
 <br>
 
-## ONNX Operators that support the IBM Z Integrated Accelerator for AI <a id="nnpa-ops"></a>
+## ONNX Operators supported by CPU <a id="cpu-ops"></a>
+
+For the most up to date list, see [Supported ONNX Operation for Target CPU](https://github.com/onnx/onnx-mlir/blob/main/docs/SupportedONNXOps-cpu.md) in the onnx-mlir repository.
+
+<br>
+
+## ONNX Operators that supported by IBM Z Integrated Accelerator for AI <a id="nnpa-ops"></a>
 
 For the most up to date list, see [Supported ONNX Operation for Target NNPA](https://github.com/onnx/onnx-mlir/blob/main/docs/SupportedONNXOps-NNPA.md) in the onnx-mlir repository.
 
