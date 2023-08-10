@@ -11,12 +11,13 @@
     * [Building a model .jar file using the IBM zDLC](#build-jar)
     * [Building Java programs to call the model](#run-java)
     * [Running the Python example](#run-python)
+    * [ONNX Operators supported by CPU](#cpu-ops)
 * [IBM Z Integrated Accelerator for AI](#nnpa-overview)
     * [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)
     * [Performance tips for IBM Z Integrated Accelerator for AI](#nnpa-tips)
         * [Specifying input tensor dimensions](#nnpa-tips-shape)
         * [View operation targets at compile time](#nnpa-tips-ops-target)
-    * [ONNX Operators that support the IBM Z Integrated Accelerator for AI](#nnpa-ops)
+    * [ONNX Operators supported by IBM Z Integrated Accelerator for AI](#nnpa-ops)
 * [Removing IBM Z Deep Learning Compiler](#del-image)
 <br>
 
@@ -431,6 +432,12 @@ Note that the output values will be random since the input values are random.
 
 <br>
 
+## ONNX Operators supported by CPU <a id="cpu-ops"></a>
+
+For the most up to date list, see [Supported ONNX Operation for Target CPU](https://github.com/onnx/onnx-mlir/blob/main/docs/SupportedONNXOps-cpu.md) in the onnx-mlir repository.
+
+<br>
+
 # IBM Z Integrated Accelerator for AI <a id="nnpa-overview"></a>
 
 IBM z16 systems include a new Integrated Accelerator for AI to enable real-time
@@ -524,12 +531,6 @@ that will run on CPU vs the IBM Z Integrated Accelerator for AI at compile time.
 When compiling the model, add `--onnx-op-stats [TXT|JSON]`. Operations that
 begin with `onnx.*` will execute on CPU and operations that begin with `zhigh.*`
 are related to the IBM Z Integrated Accelerator for AI.
-
-<br>
-
-## ONNX Operators supported by CPU <a id="cpu-ops"></a>
-
-For the most up to date list, see [Supported ONNX Operation for Target CPU](https://github.com/onnx/onnx-mlir/blob/main/docs/SupportedONNXOps-cpu.md) in the onnx-mlir repository.
 
 <br>
 
