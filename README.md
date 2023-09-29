@@ -16,7 +16,9 @@
     * [Performance tips for IBM Z Integrated Accelerator for AI](#nnpa-tips)
         * [Specifying input tensor dimensions](#nnpa-tips-shape)
         * [View operation targets at compile time](#nnpa-tips-ops-target)
-    * [ONNX Operators that support the IBM Z Integrated Accelerator for AI](#nnpa-ops)
+* [ONNX Operators supported by CPU](#cpu-ops)
+* [ONNX Operators supported by IBM Z Integrated Accelerator for AI](#nnpa-ops)
+* [Obtaining IBM Z Deep Learning Compiler debug instrumentation](#inst-debug)
 * [Removing IBM Z Deep Learning Compiler](#del-image)
 <br>
 
@@ -57,35 +59,62 @@ is located at [IBM Z and LinuxONE Container Registry](https://ibm.github.io/ibm-
 
 Determine the desired version of the zdlc image to download from the [IBM Z and LinuxOne Container Registry](https://ibm.github.io/ibm-z-oss-hub/main/main.html).
 
-Switch to the desired directory to download the zdlc image to.
+
+Set ZDLC_IMAGE based on the desired IBM zDLC version:
+
+```
+ZDLC_IMAGE=icr.io/ibmz/zdlc:4.1.0
+```
 <br>
 
-Set ZDLC_IMAGE based on the desired version and ZDLC_DIR to the current working directory where the zdlc image will be downloaded to:
-
-```
-ZDLC_IMAGE=icr.io/ibmz/zdlc:[version]
-ZDLC_DIR=$(pwd)/zDLC
-```
-
-Pull the image as shown in the following code block:
+Pull the image as shown:
 
 ```
 docker pull ${ZDLC_IMAGE}
 ```
 
-Note the zdlc examples require that ZDLC_IMAGE and ZDLC_DIR be set.
+| Variable | Description |
+| -------- | ----------- |
+|ZDLC_IMAGE=icr.io/ibmz/zdlc:[version]|Set [version] based on the desired version in IBM Z and LinuxONE Container Registry.|
+<br>
+
+## Download the IBM Z Deep Learning Compiler examples <a id="clone_examples"></a>
+<br>
+
+The code examples are located in this GitHub repository. The easiest way to
+follow the examples is to clone the example code repository to your local system.
+
+To clone the example repository to a new subdirectory called `zDLC`:
+```
+git clone https://github.com/IBM/zDLC
+```
 
 <br>
+
+Set ZDLC_DIR to where you cloned this example repository:
+```
+ZDLC_DIR=$(pwd)/zDLC
+```
+This assumes you cloned the repository to the current working directory using
+the `git clone` command above. If you cloned the repository to another location,
+make sure to set this variable accordingly.
 
 | Variable | Description |
 | -------- | ----------- |
-|ZDLC_IMAGE=icr.io/ibmz/zdlc:[version]|Set [version] based on the desired version in IBM Z and LinuxONE Container Registry.<br><br>Used in:<br>• [IBM Z Deep Learning Compiler command line interface help](#cli-help)<br>• [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building a model .jar file using the IBM zDLC](#build-jar)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)|
-|ZDLC_DIR=$(pwd)/zDLC|$(pwd) resolves to the current working directory.  Ensure the current working directory contains the downloaded IBM Z Deep Learning Compiler container image before setting the ZLDC_DIR environment variable.<br><br>Used in:<br>• [Environment variables](#setvars)<br>• [Running the Python example](#run-python)|
-<br>
+|ZDLC_DIR=$(pwd)/zDLC| `$(pwd)` resolves to the current working directory. <br> `zDLC` is the name of this repository. The zDLC directory is created automatically by `git clone`.
 
 ## Environment variables <a id="setvars"></a>
 
-Set the environment variables for use with the IBM Z Deep Learning Compiler container image. The environment variables will simplify the container commands throughout the rest of this document. See the description in the table below for addidtional information.  ZDLC_DIR must be set first.  See [Download the IBM Z Deep Learning compiler container image](#container) to set if needed.
+Set the environment variables for use with the IBM Z Deep Learning Compiler
+container image. The environment variables will simplify the container commands
+throughout the rest of this document. See the description in the table below for
+additional information.
+
+NOTE: ZDLC_IMAGE and ZDLC_DIR are based on your local system. To set these
+environment variables, see:
+* [Download the IBM Z Deep Learning compiler container image](#container)
+* [Download the IBM Z Deep Learning Compiler example repository](#clone_examples)
+
 
 ```
 GCC_IMAGE_ID=icr.io/ibmz/gcc:12
@@ -95,6 +124,8 @@ ZDLC_LIB_DIR=${ZDLC_DIR}/lib
 ZDLC_BUILD_DIR=${ZDLC_DIR}/build
 ZDLC_MODEL_DIR=${ZDLC_DIR}/models
 ZDLC_MODEL_NAME=mnist-12
+if [ -z ${ZDLC_IMAGE} ]; then echo ERROR: ZDLC_IMAGE must be set first; fi
+if [ -z ${ZDLC_DIR} ] || [ ! -d ${ZDLC_DIR} ]; then echo ERROR: ZDLC_DIR must be set to an existing zDLC example directory first; fi
 ```
 
 | Variable | Description |
@@ -104,9 +135,9 @@ ZDLC_MODEL_NAME=mnist-12
 |ZDLC_CODE_DIR=${ZDLC_DIR}/code|Used in:<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)|
 |ZDLC_LIB_DIR=${ZDLC_DIR}/lib|Used in:<br>• [Running the Python example](#run-python)|
 |ZDLC_BUILD_DIR=${ZDLC_DIR}/build|Used in:<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building Java programs to call the model](#run-java)|
-|ZDLC_MODEL_DIR=${ZDLC_DIR}/models|Used in:<br>• [Building the code samples](#code-samples)<br>• [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building a model .jar file using the IBM zDLC](#build-jar)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)|
-|ZDLC_MODEL_NAME=mnist-12|Used in:<br>• [Building the code samples](#code-samples)<br>• [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)<br>• [Building a model .jar file using the IBM zDLC](#build-jar)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)|
-
+|ZDLC_MODEL_DIR=${ZDLC_DIR}/models|Used in:<br>• [Building the code samples](#code-samples)<br>• [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building a model .jar file using the IBM zDLC](#build-jar)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)<br>• [Obtaining IBM Z Deep Learning Compiler debug instrumentation](#inst-debug)|
+|ZDLC_MODEL_NAME=mnist-12|Used in:<br>• [Building the code samples](#code-samples)<br>• [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)<br>• [Building a model .jar file using the IBM zDLC](#build-jar)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Obtaining IBM Z Deep Learning Compiler debug instrumentation](#inst-debug)|
+|if ... fi | Simple tests to confirm ZDLC_IMAGE and ZDLC_DIR were set. If they were not set, set them and then reset the other variables.
 <br>
 
 ## IBM Z Deep Learning Compiler command line interface help <a id="cli-help"></a>
@@ -134,16 +165,9 @@ adding the `--help` option to the command line.
 
 # Building the code samples <a id="code-samples"></a>
 
-The easiest way to follow the examples is to clone the example code repository:
 
-```
-git clone https://github.com/IBM/zDLC
-```
-
-The code examples are located in the GitHub repository.
-
-The code examples build three deep learning models from the ONNX Model Zoo.
-You can download just the example model using:
+If you are using the default mnist example model from the ONNX Model Zoo,
+you can download it using:
 ```
 wget --directory-prefix $ZDLC_MODEL_DIR https://github.com/onnx/models/raw/main/vision/classification/mnist/model/$ZDLC_MODEL_NAME.onnx
 ```
@@ -527,13 +551,157 @@ are related to the IBM Z Integrated Accelerator for AI.
 
 <br>
 
-## ONNX Operators that support the IBM Z Integrated Accelerator for AI <a id="nnpa-ops"></a>
+# ONNX Operators supported by CPU <a id="cpu-ops"></a>
 
-For the most up to date list, see [Supported ONNX Operation for Target NNPA](https://github.com/onnx/onnx-mlir/blob/main/docs/SupportedONNXOps-NNPA.md) in the onnx-mlir repository.
+For the most up to date list, see [Supported ONNX Operation for Target CPU](https://github.com/onnx/onnx-mlir/blob/v0.4.1/docs/SupportedONNXOps-cpu.md) in the onnx-mlir repository.
+
+<br>
+
+# ONNX Operators supported by IBM Z Integrated Accelerator for AI <a id="nnpa-ops"></a>
+
+For the most up to date list, see [Supported ONNX Operation for Target NNPA](https://github.com/onnx/onnx-mlir/blob/v0.4.1/docs/SupportedONNXOps-NNPA.md) in the onnx-mlir repository.
+
+<br>
+
+# Obtaining IBM Z Deep Learning Compiler debug instrumentation <a id="inst-debug"></a>
+
+Instrumention debug information can be obtained during model runtime using two different methods during model compilation for the IBM Z Deep Learning Compiler.
+1. [Profile IR option](#profile-ir)
+2. [Instrument options](#instrument-options)
+
+<br>
+
+## Profile IR Option<a id="profile-ir"></a>
+
+Spcifying the `--profile-ir` option for the IBM Z Deep Learning Compiler to cause instrumention debug information to be printed during model runtime.
+
+The values for the `--profile-ir` option are as follows:
+
+  |Option Value|Description|
+  |-----------|--------------------------------------------------------|
+  |None|No profiling. This is the defualt.|
+  |Onnx|Profile for onnx ops.|
+  |ZHigh|Profile for NNPA zhigh ops.|
+
+### Examples
+
+1. Profiling for onnx ops:
+
+   Compiling the model:
+   ```
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --profile-ir=Onnx ${ZDLC_MODEL_NAME}.onnx
+   ```
+   Sample output when running model:
+   ```
+   #0) before onnx.Constant Time elapsed: 1692618036.154512 accumulated: 1692618036.154512 (Times212_reshape1)
+   #1) after  onnx.Constant Time elapsed: 0.000005 accumulated: 1692618036.154517 (Times212_reshape1)
+   #2) before onnx.Constant Time elapsed: 0.000002 accumulated: 1692618036.154519 (Plus112-Convolution110-Initializer_Parameter88)
+   #3) after  onnx.Constant Time elapsed: 0.000004 accumulated: 1692618036.154523 (Plus112-Convolution110-Initializer_Parameter88)
+   ```
+2. Profiling for zhigh ops:
+
+   Compiling the model:
+   ```
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --profile-ir=ZHigh ${ZDLC_MODEL_NAME}.onnx
+   ```
+   Sample output when running model:
+   ```
+   #8) before zhigh.StickifiedConstant Time elapsed: 0.000003 accumulated: 1692617935.010772 (ReLU32-Plus30-Convolution28-Initializer_Parameter6)
+   #9) after  zhigh.StickifiedConstant Time elapsed: 0.000004 accumulated: 1692617935.010776 (ReLU32-Plus30-Convolution28-Initializer_Parameter6)
+   #10) before zhigh.Conv2D Time elapsed: 0.000003 accumulated: 1692617935.010779 (ReLU32-Plus30-Convolution28-Initializer_Parameter6)
+   #11) after  zhigh.Conv2D Time elapsed: 0.000161 accumulated: 1692617935.010940 (ReLU32-Plus30-Convolution28-Initializer_Parameter6)
+   ```
+
+ Notes:
+  * The call to initialize instrumentation, OMInstrumentInit, must be done before loading the model shared library.
+  * Runtime instrumenting will affect model performance due to the additional tracking and printing.
+
+<br>
+
+## Instrument Options <a id="instrument-options"></a>
+
+Spcifying the instrument options for the IBM Z Deep Learning Compiler to cause instrumention debug information to be printed during model runtime.
+
+There are three types of instrument options that can be specified.
+
+1. The stage to be instrumented is specified using the `--instrument-stage` option with value:
+
+      |Option Value|Description|
+      |-----------|--------------------------------------------------------|
+      |Onnx|Get onnx-level profiling. If "--maccel=NNPA" is also specified then get profile onnx ops before lowering to zhigh.|
+      |ZHigh|Get NNPA profiling for onnx and zhigh ops.|
+      |ZLow|Get NNPA profiling for zlow ops.|
+
+2. The operations to be instrumented are specified using the `--instrument-ops` option with value:
+
+      |Option Value|Description|
+      |-----------|--------------------------------------------------------|
+      |NONE or ""|No instrumentation.|
+      |ops1,ops2, ...|Multiple ops.  e.g. onnx.Conv,onnx.Add for Conv and Add ops.|
+      |ops.*|Ops using * wildcard. e.g. onnx.* for all onnx operations.|
+
+3. The instrumentation actions are specified using the following options:
+
+      |Option|Description|
+      |-----------|--------------------------------------------------------|
+      |`--InstrumentBeforeOp`|Insert instrument before op.|
+      |`--InstrumentAfterOp`|Insert instrument after op.|
+      |`--InstrumentReportTime`|Instrument runtime reports time usage.|
+      |`--InstrumentReportMemory`|Instrument runtime reports memory usage.|
+
+### Examples
+
+1. Profiling time for onnx ops before lowering to zhigh ops:
+
+   Compiling the model:
+   ```
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --instrument-stage=Onnx --instrument-ops=onnx.* --InstrumentBeforeOp --InstrumentAfterOp --InstrumentReportTime ${ZDLC_MODEL_NAME}.onnx
+   ```
+   Sample output when running model:
+   ```
+   #  0) before onnx.Constant Time elapsed: 1691688479.493696 accumulated: 1691688479.493696
+   #  1) after  onnx.Constant Time elapsed: 0.000005 accumulated: 1691688479.493701
+   #  2) before onnx.Constant Time elapsed: 0.000004 accumulated: 1691688479.493705
+   #  3) after  onnx.Constant Time elapsed: 0.000004 accumulated: 1691688479.493709
+   ```
+
+2. Profiling time for onnx and zhigh ops:
+
+   Compiling the model:
+   ```
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --instrument-stage=ZHigh --instrument-ops=onnx.*,zhigh.* --InstrumentBeforeOp --InstrumentAfterOp --InstrumentReportTime ${ZDLC_MODEL_NAME}.onnx
+   ```
+   Sample output when running model:
+   ```
+   # 24) before onnx.Reshape Time elapsed: 0.000002 accumulated: 1691688806.270982 (Times212_reshape0)
+   # 25) after  onnx.Reshape Time elapsed: 0.000001 accumulated: 1691688806.270983 (Times212_reshape0)
+   # 26) before zhigh.Stick Time elapsed: 0.000002 accumulated: 1691688806.270985
+   # 27) after  zhigh.Stick Time elapsed: 0.000003 accumulated: 1691688806.270988
+   ```
+
+3. Profiling memory for zlow ops:
+
+   Compiling the model:
+   ```
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --instrument-stage=ZLow --instrument-ops=zlow.* --InstrumentBeforeOp --InstrumentAfterOp --InstrumentReportMemory ${ZDLC_MODEL_NAME}.onnx
+   ```
+   Sample output when running model:
+   ```
+   # 14) before zlow.matmul VMem:  5456
+   # 15) after  zlow.matmul VMem:  5456
+   # 16) before zlow.add VMem:  5456
+   # 17) after  zlow.add VMem:  5456
+   ```
+
+ Notes:
+  * The call to initialize instrumentation, OMInstrumentInit, must be done before loading the model shared library.
+  * Runtime instrumenting will affect model performance due to the additional tracking and printing.
 
 <br>
 
 # Removing IBM Z Deep Learning Compiler <a id="del-image"></a>
+
+<br>
 
 First, find the `IMAGE ID` for the container image.
 
