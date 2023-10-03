@@ -96,7 +96,6 @@ The following list of ONNX models from the [ONNX Model Zoo](https://github.com/o
 |  | [squeezenet1.0-9](https://github.com/onnx/models/tree/main/vision/classification/squeezenet) |
 |  | [squeezenet1.0-12](https://github.com/onnx/models/tree/main/vision/classification/squeezenet) |
 |  | [squeezenet1.1-7](https://github.com/onnx/models/tree/main/vision/classification/squeezenet) |
-| Sub_pixel_cnn_2016 | [super-resolution-10](https://github.com/onnx/models/tree/main/vision/super_resolution/sub_pixel_cnn_2016) |
 | T5 | [t5-encoder-12](https://github.com/onnx/models/tree/main/text/machine_comprehension/t5) |
 |  | [t5-decoder-with-lm-head-12](https://github.com/onnx/models/tree/main/text/machine_comprehension/t5) |
 | Tiny-yolov2 | [tinyyolov2-7](https://github.com/onnx/models/tree/main/vision/object_detection_segmentation/tiny-yolov2) |
