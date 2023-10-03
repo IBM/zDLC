@@ -2,7 +2,7 @@
 
 ## Table of contents
 * [Overview](#overview)
-* [Download the IBM Z Deep Learning compiler container image](#container)
+* [Download the IBM Z Deep Learning Compiler container image](#container)
 * [Environment variables](#setvars)
 * [IBM Z Deep Learning Compiler command line interface help](#cli-help)
 * [Building the code samples](#code-samples)
@@ -112,7 +112,7 @@ additional information.
 
 NOTE: ZDLC_IMAGE and ZDLC_DIR are based on your local system. To set these
 environment variables, see:
-* [Download the IBM Z Deep Learning compiler container image](#container)
+* [Download the IBM Z Deep Learning Compiler container image](#container)
 * [Download the IBM Z Deep Learning Compiler example repository](#clone_examples)
 
 
