@@ -1,6 +1,8 @@
 FROM icr.io/ibmz/python:3.9.13
-RUN apt-get update && \
-    apt-get clean
+RUN apt-get update \
+    && apt-get install -y \
+        libopenblas-dev \
+    && apt-get clean
 RUN pip3 install numpy
 ENTRYPOINT [ "python3" ]
 CMD [ "--help" ]
