@@ -172,7 +172,7 @@ adding the `--help` option to the command line.
 If you are using the default mnist example model from the ONNX Model Zoo,
 you can download it using:
 ```
-wget --directory-prefix $ZDLC_MODEL_DIR https://github.com/onnx/models/raw/main/archive/vision/classification/mnist/model/$ZDLC_MODEL_NAME.onnx
+wget --directory-prefix $ZDLC_MODEL_DIR https://github.com/onnx/models/raw/main/validated/vision/classification/mnist/model/$ZDLC_MODEL_NAME.onnx
 ```
 <br>
 
