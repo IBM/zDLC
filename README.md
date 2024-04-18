@@ -16,6 +16,7 @@
     * [Performance tips for IBM Z Integrated Accelerator for AI](#nnpa-tips)
         * [Specifying input tensor dimensions](#nnpa-tips-shape)
         * [View operation targets at compile time](#nnpa-tips-ops-target)
+        * [Device placement of targets at compile time](#nnpa-device-placement)
 * [Obtaining IBM Z Deep Learning Compiler debug instrumentation](#inst-debug)
 * [Scope and Versioning](#scope-and-versioning)
     * [Project Scope](#scope)
@@ -66,7 +67,7 @@ Determine the desired version of the zdlc image to download from the [IBM Z and 
 Set ZDLC_IMAGE based on the desired IBM zDLC version:
 
 ```
-ZDLC_IMAGE=icr.io/ibmz/zdlc:4.1.1
+ZDLC_IMAGE=icr.io/ibmz/zdlc:4.2.0
 ```
 <br>
 
@@ -138,8 +139,8 @@ if [ -z ${ZDLC_DIR} ] || [ ! -d ${ZDLC_DIR} ]; then echo ERROR: ZDLC_DIR must be
 |ZDLC_CODE_DIR=${ZDLC_DIR}/code|Used in:<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)|
 |ZDLC_LIB_DIR=${ZDLC_DIR}/lib|Used in:<br>• [Running the Python example](#run-python)|
 |ZDLC_BUILD_DIR=${ZDLC_DIR}/build|Used in:<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building Java programs to call the model](#run-java)|
-|ZDLC_MODEL_DIR=${ZDLC_DIR}/models|Used in:<br>• [Building the code samples](#code-samples)<br>• [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building a model .jar file using the IBM zDLC](#build-jar)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)<br>• [Obtaining IBM Z Deep Learning Compiler debug instrumentation](#inst-debug)|
-|ZDLC_MODEL_NAME=mnist-12|Used in:<br>• [Building the code samples](#code-samples)<br>• [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)<br>• [Building a model .jar file using the IBM zDLC](#build-jar)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Obtaining IBM Z Deep Learning Compiler debug instrumentation](#inst-debug)|
+|ZDLC_MODEL_DIR=${ZDLC_DIR}/models|Used in:<br>• [Building the code samples](#code-samples)<br>• [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building a model .jar file using the IBM zDLC](#build-jar)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)<br>• [Obtaining IBM Z Deep Learning Compiler debug instrumentation](#inst-debug)<br>• [Device placement of targets at compile time](#nnpa-device-placement)|
+|ZDLC_MODEL_NAME=mnist-12|Used in:<br>• [Building the code samples](#code-samples)<br>• [Building a model .so using the IBM Z Deep Learning Compiler](#build-so)<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)<br>• [Building a model .jar file using the IBM zDLC](#build-jar)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Obtaining IBM Z Deep Learning Compiler debug instrumentation](#inst-debug)<br>• [Device placement of targets at compile time](#nnpa-device-placement)|
 |if ... fi | Simple tests to confirm ZDLC_IMAGE and ZDLC_DIR were set. If they were not set, set them and then reset the other variables.
 <br>
 
@@ -391,7 +392,7 @@ Next, copy the PyRuntime library out of the docker container using:
 
 ```
 mkdir -p ${ZDLC_LIB_DIR}
-docker run --rm -v ${ZDLC_LIB_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE} -c "cp /usr/local/lib/PyRuntime.cpython-*-s390x-linux-gnu.so /files"
+docker run --rm -v ${ZDLC_LIB_DIR}:/files:z --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE} -c "cp /usr/local/lib/PyRuntime* /files"
 ```
 
 | Command<br>and<br>Parameters | Description |
@@ -554,6 +555,145 @@ are related to the IBM Z Integrated Accelerator for AI.
 
 <br>
 
+### Device placement of operations<a id="nnpa-device-placement"></a>
+
+When compiling using the IBM Z Deep Learning Compiler, the target for operations
+can be obtained or specified.  The target for operations is either on the CPU or
+the IBM Z Integrated Accelerator (NNPA) for AI.
+
+Note that specifying a target of NNPA for an operation does not guarantee it
+will run on NNPA.  This can happen for reasons such as:
+* NNPA is not supported for the operation.
+* NNPA does not support the tensor size used in the model.
+* The operation will run faster on the CPU.
+
+For details on obtaining or specifying the target for device placement see:
+* [Open source device placement documentation](https://github.com/onnx/onnx-mlir/blob/0.4.2.0/docs/DevicePlacement-NNPA.md) <a id=":device-placement"></a>
+
+### Examples
+
+1. Save default device placement json to a file while compiling a model.
+
+   ```
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --nnpa-save-device-placement-file=${ZDLC_MODEL_NAME}.json ${ZDLC_MODEL_NAME}.onnx
+   ```
+
+   * `--EmitLib` specifies to build a `.so` shared library of the model.
+   * `--nnpa-save-device-placement-file` option specifies to save the device placement for the model's operations to a json file.
+
+
+   Sample content of the model's output device placement json file. Notice the `onnx.Gemm` node with name `Plus214-Times212_2`  is targeted to device `nnpa`:
+   ```
+   {
+       "device_placement": [
+           {
+               "device": "nnpa",
+               "node_type": "onnx.Conv",
+               "onnx_node_name": "Plus30-Convolution28-Initializer_Parameter6_0"
+           },
+           {
+               "device": "nnpa",
+               "node_type": "onnx.Relu",
+               "onnx_node_name": "ReLU32"
+           },
+           {
+               "device": "nnpa",
+               "node_type": "onnx.MaxPoolSingleOut",
+               "onnx_node_name": "Pooling66"
+           },
+           {
+               "device": "nnpa",
+               "node_type": "onnx.Conv",
+               "onnx_node_name": "Plus112-Convolution110-Initializer_Parameter88_1"
+           },
+           {
+               "device": "nnpa",
+               "node_type": "onnx.Relu",
+               "onnx_node_name": "ReLU114"
+           },
+           {
+               "device": "nnpa",
+               "node_type": "onnx.MaxPoolSingleOut",
+               "onnx_node_name": "Pooling160"
+           },
+           {
+               "device": "",
+               "node_type": "onnx.Reshape",
+               "onnx_node_name": "Times212_reshape0"
+           },
+           {
+               "device": "nnpa",
+               "node_type": "onnx.Gemm",
+               "onnx_node_name": "Plus214-Times212_2"
+           }
+       ]
+   }
+   ```
+
+2. Edit the ${ZDLC_MODEL_NAME}.json file and change target for onnx.Gemm operation `Plus214-Times212_2`.
+
+   Sample content of the edited model's input device placement json file.
+   Notice the `onnx.Gemm` node with name `Plus214-Times212_2` has been modified to target device `cpu` instead of `nnpa`:
+   ```
+   {
+       "device_placement": [
+           {
+               "device": "nnpa",
+               "node_type": "onnx.Conv",
+               "onnx_node_name": "Plus30-Convolution28-Initializer_Parameter6_0"
+           },
+           {
+               "device": "nnpa",
+               "node_type": "onnx.Relu",
+               "onnx_node_name": "ReLU32"
+           },
+           {
+               "device": "nnpa",
+               "node_type": "onnx.MaxPoolSingleOut",
+               "onnx_node_name": "Pooling66"
+           },
+           {
+               "device": "nnpa",
+               "node_type": "onnx.Conv",
+               "onnx_node_name": "Plus112-Convolution110-Initializer_Parameter88_1"
+           },
+           {
+               "device": "nnpa",
+               "node_type": "onnx.Relu",
+               "onnx_node_name": "ReLU114"
+           },
+           {
+               "device": "nnpa",
+               "node_type": "onnx.MaxPoolSingleOut",
+               "onnx_node_name": "Pooling160"
+           },
+           {
+               "device": "",
+               "node_type": "onnx.Reshape",
+               "onnx_node_name": "Times212_reshape0"
+           },
+           {
+               "device": "cpu",
+               "node_type": "onnx.Gemm",
+               "onnx_node_name": "Plus214-Times212_2"
+           }
+       ]
+   }
+   ```
+
+3. Build a model and loading the device placement specification for the model's operations from a json file.
+
+   In this example the device placement json file is used to specify that the `onnx.Gemm` node with name `Plus214-Times212_2` should target device `cpu` instead of `nnpa` as indicated in the device json file from the previous example.
+
+   ```
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --nnpa-load-device-placement-file=${ZDLC_MODEL_NAME}.json ${ZDLC_MODEL_NAME}.onnx
+   ```
+
+   * `--EmitLib` specifies to build a `.so` shared library of the model.
+   * `--nnpa-load-device-placement-file` option specifies to load the device placement specification for the model's operations from a json file.
+
+<br>
+
 # Scope and Versioning Policy <a id="scope-and-versioning"></a>
 
 ## Project Scope <a id="scope"></a>
@@ -568,8 +708,8 @@ ONNX-MLIR accelerators are not supported by IBM zDLC.
 The following links lists supported operators, operator opset ranges, and any
 operator specific limitations. Operators that are not listed or usage of
 documented limitations are beyond IBM zDLC project scope:
-* [Supported ONNX Operation for CPU](https://github.com/onnx/onnx-mlir/blob/v0.4.1.2/docs/SupportedONNXOps-cpu.md) <a id="cpu-ops"></a>
-* [Supported ONNX Operation for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/v0.4.1.2/docs/SupportedONNXOps-NNPA.md) <a id="nnpa-ops"></a>
+* [Supported ONNX Operation for CPU](https://github.com/onnx/onnx-mlir/blob/0.4.2.0/docs/SupportedONNXOps-cpu.md) <a id="cpu-ops"></a>
+* [Supported ONNX Operation for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/0.4.2.0/docs/SupportedONNXOps-NNPA.md) <a id="nnpa-ops"></a>
 
 
 ## Versioning Policy <a id="versioning"></a>
