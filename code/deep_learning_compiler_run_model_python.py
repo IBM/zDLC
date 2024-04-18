@@ -1,3 +1,9 @@
+ # SPDX-License-Identifier: Apache-2.0
+ #
+ # Copyright contributors to the deep-learning-compiler-container-images project
+ #
+ # Description: Python Example for calling model APIs
+
 import argparse
 import json
 import numpy as np
