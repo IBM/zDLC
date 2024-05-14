@@ -1,4 +1,4 @@
-FROM icr.io/ibmz/python:3.9.13
+FROM icr.io/ibmz/python:3.9.16-bullseye
 RUN apt-get update \
     && apt-get install -y \
         libopenblas-dev \
