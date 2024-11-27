@@ -77,9 +77,10 @@ OMTensorList *generate_input() {
         }
 
         // Generate a random input tensor for our model.
-        float *input_data = (float *)malloc(sizeof(float) * input_size);
+        float *input_data = static_cast<float *>(malloc(sizeof(float) * input_size));
+        if(!input_data) return NULL;
         for (int i = 0; i < input_size; i++) {
-            input_data[i] = ((float)std::rand()) / (float)RAND_MAX;
+            input_data[i] = (static_cast<float>(std::rand())) / static_cast<float>(RAND_MAX);
         }
 
         // Shift down the string for the next iteration
@@ -100,6 +101,13 @@ OMTensorList *generate_input() {
 
 int main(int argc, char **argv) {
     OMTensorList *input_omtensor_list = generate_input();
+    
+    // If an error occurs during input tensor creation, NULL is returned.
+    if (input_omtensor_list == NULL) {
+        std::cout << "generate_input encountered an error: " << strerror(errno)
+                  << std::endl;
+        exit(-1);
+    }
 
     // Run model
     OMTensorList *output_omtensor_list = run_main_graph(input_omtensor_list);
@@ -128,7 +136,7 @@ int main(int argc, char **argv) {
         switch (omTensorGetDataType(output_tensor)) {
         case ONNX_TYPE_BOOL: {
             std::cout << "of type bool[]:" << std::endl;
-            bool *elems = (bool *)omTensorGetDataPtr(output_tensor);
+            bool *elems = static_cast<bool *>(omTensorGetDataPtr(output_tensor));
             for (int elem_idx = 0; elem_idx < num_elements; elem_idx++) {
                 std::cout << "\t" << elems[elem_idx] << std::endl;
             }
@@ -136,7 +144,7 @@ int main(int argc, char **argv) {
         }
         case ONNX_TYPE_INT8: {
             std::cout << "of type int8_t[]:" << std::endl;
-            int8_t *elems = (int8_t *)omTensorGetDataPtr(output_tensor);
+            int8_t *elems = static_cast<int8_t *>(omTensorGetDataPtr(output_tensor));
             for (int elem_idx = 0; elem_idx < num_elements; elem_idx++) {
                 std::cout << "\t" << elems[elem_idx] << std::endl;
             }
@@ -144,7 +152,7 @@ int main(int argc, char **argv) {
         }
         case ONNX_TYPE_UINT8: {
             std::cout << "of type uint8_t[]:" << std::endl;
-            uint8_t *elems = (uint8_t *)omTensorGetDataPtr(output_tensor);
+            uint8_t *elems = static_cast<uint8_t *>(omTensorGetDataPtr(output_tensor));
             for (int elem_idx = 0; elem_idx < num_elements; elem_idx++) {
                 std::cout << "\t" << elems[elem_idx] << std::endl;
             }
@@ -152,7 +160,7 @@ int main(int argc, char **argv) {
         }
         case ONNX_TYPE_INT16: {
             std::cout << "of type int16_t[]:" << std::endl;
-            int16_t *elems = (int16_t *)omTensorGetDataPtr(output_tensor);
+            int16_t *elems = static_cast<int16_t *>(omTensorGetDataPtr(output_tensor));
             for (int elem_idx = 0; elem_idx < num_elements; elem_idx++) {
                 std::cout << "\t" << elems[elem_idx] << std::endl;
             }
@@ -160,7 +168,7 @@ int main(int argc, char **argv) {
         }
         case ONNX_TYPE_UINT16: {
             std::cout << "of type uint16_t[]:" << std::endl;
-            uint16_t *elems = (uint16_t *)omTensorGetDataPtr(output_tensor);
+            uint16_t *elems = static_cast<uint16_t *>(omTensorGetDataPtr(output_tensor));
             for (int elem_idx = 0; elem_idx < num_elements; elem_idx++) {
                 std::cout << "\t" << elems[elem_idx] << std::endl;
             }
@@ -168,7 +176,7 @@ int main(int argc, char **argv) {
         }
         case ONNX_TYPE_INT32: {
             std::cout << "of type int32_t[]:" << std::endl;
-            int32_t *elems = (int32_t *)omTensorGetDataPtr(output_tensor);
+            int32_t *elems = static_cast<int32_t *>(omTensorGetDataPtr(output_tensor));
             for (int elem_idx = 0; elem_idx < num_elements; elem_idx++) {
                 std::cout << "\t" << elems[elem_idx] << std::endl;
             }
@@ -176,7 +184,7 @@ int main(int argc, char **argv) {
         }
         case ONNX_TYPE_UINT32: {
             std::cout << "of type uint32_t[]:" << std::endl;
-            uint32_t *elems = (uint32_t *)omTensorGetDataPtr(output_tensor);
+            uint32_t *elems = static_cast<uint32_t *>(omTensorGetDataPtr(output_tensor));
             for (int elem_idx = 0; elem_idx < num_elements; elem_idx++) {
                 std::cout << "\t" << elems[elem_idx] << std::endl;
             }
@@ -184,7 +192,7 @@ int main(int argc, char **argv) {
         }
         case ONNX_TYPE_INT64: {
             std::cout << "of type int64_t[]:" << std::endl;
-            int64_t *elems = (int64_t *)omTensorGetDataPtr(output_tensor);
+            int64_t *elems = static_cast<int64_t *>(omTensorGetDataPtr(output_tensor));
             for (int elem_idx = 0; elem_idx < num_elements; elem_idx++) {
                 std::cout << "\t" << elems[elem_idx] << std::endl;
             }
@@ -192,7 +200,7 @@ int main(int argc, char **argv) {
         }
         case ONNX_TYPE_UINT64: {
             std::cout << "of type uint64_t[]:" << std::endl;
-            uint64_t *elems = (uint64_t *)omTensorGetDataPtr(output_tensor);
+            uint64_t *elems = static_cast<uint64_t *>(omTensorGetDataPtr(output_tensor));
             for (int elem_idx = 0; elem_idx < num_elements; elem_idx++) {
                 std::cout << "\t" << elems[elem_idx] << std::endl;
             }
@@ -200,7 +208,7 @@ int main(int argc, char **argv) {
         }
         case ONNX_TYPE_FLOAT: {
             std::cout << "of type float[]:" << std::endl;
-            float *elems = (float *)omTensorGetDataPtr(output_tensor);
+            float *elems = static_cast<float *>(omTensorGetDataPtr(output_tensor));
             for (int elem_idx = 0; elem_idx < num_elements; elem_idx++) {
                 std::cout << "\t" << elems[elem_idx] << std::endl;
             }
@@ -208,7 +216,7 @@ int main(int argc, char **argv) {
         }
         case ONNX_TYPE_STRING: {
             std::cout << "of type char[]:" << std::endl;
-            char *elems = (char *)omTensorGetDataPtr(output_tensor);
+            char *elems = static_cast<char *>(omTensorGetDataPtr(output_tensor));
             for (int elem_idx = 0; elem_idx < num_elements; elem_idx++) {
                 std::cout << "\t" << elems[elem_idx] << std::endl;
             }
