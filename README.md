@@ -67,7 +67,7 @@ Determine the desired version of the zdlc image to download from the [IBM Z and 
 Set ZDLC_IMAGE based on the desired IBM zDLC version:
 
 ```
-ZDLC_IMAGE=icr.io/ibmz/zdlc:4.2.0
+ZDLC_IMAGE=icr.io/ibmz/zdlc:4.3.0
 ```
 <br>
 
@@ -568,7 +568,7 @@ will run on NNPA.  This can happen for reasons such as:
 * The operation will run faster on the CPU.
 
 For details on obtaining or specifying the target for device placement see:
-* [Open source device placement documentation](https://github.com/onnx/onnx-mlir/blob/0.4.2.0/docs/DevicePlacement-NNPA.md) <a id=":device-placement"></a>
+* [Open source device placement documentation](https://github.com/onnx/onnx-mlir/blob/0.4.3.0/docs/DevicePlacement-NNPA.md) <a id=":device-placement"></a>
 
 ### Examples
 
@@ -708,8 +708,8 @@ ONNX-MLIR accelerators are not supported by IBM zDLC.
 The following links lists supported operators, operator opset ranges, and any
 operator specific limitations. Operators that are not listed or usage of
 documented limitations are beyond IBM zDLC project scope:
-* [Supported ONNX Operation for CPU](https://github.com/onnx/onnx-mlir/blob/0.4.2.0/docs/SupportedONNXOps-cpu.md) <a id="cpu-ops"></a>
-* [Supported ONNX Operation for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/0.4.2.0/docs/SupportedONNXOps-NNPA.md) <a id="nnpa-ops"></a>
+* [Supported ONNX Operation for CPU](https://github.com/onnx/onnx-mlir/blob/0.4.3.0/docs/SupportedONNXOps-cpu.md) <a id="cpu-ops"></a>
+* [Supported ONNX Operation for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/0.4.3.0/docs/SupportedONNXOps-NNPA.md) <a id="nnpa-ops"></a>
 
 
 ## Versioning Policy <a id="versioning"></a>
@@ -762,9 +762,10 @@ compatible changes in patch updates.
 
 # Obtaining IBM Z Deep Learning Compiler debug instrumentation <a id="inst-debug"></a>
 
-Instrumention debug information can be obtained during model runtime using two different methods during model compilation for the IBM Z Deep Learning Compiler.
+Instrumention debug information can be obtained during model runtime using three different methods during model compilation for the IBM Z Deep Learning Compiler.
 1. [Profile IR option](#profile-ir)
 2. [Instrument options](#instrument-options)
+3. [NNPAUnsupportedOps option](#nnpa-unsupportedops)
 
 <br>
 
@@ -817,7 +818,7 @@ The values for the `--profile-ir` option are as follows:
 
 ## Instrument Options <a id="instrument-options"></a>
 
-Spcifying the instrument options for the IBM Z Deep Learning Compiler to cause instrumention debug information to be printed during model runtime.
+Specifying the instrument options for the IBM Z Deep Learning Compiler to cause instrumention debug information to be printed during model runtime.
 
 There are three types of instrument options that can be specified.
 
@@ -895,6 +896,32 @@ There are three types of instrument options that can be specified.
   * Runtime instrumenting will affect model performance due to the additional tracking and printing.
 
 <br>
+
+
+## NNPAUnsupportedOps option  <a id="nnpa-unsupportedop"></a>
+
+The `--opt-report=NNPAUnsupportedOps` flag is used to generate a report to inform the user why certain operations are not running on `NNPA`. The report is displayed in CSV format with the following headers `==NNPA-UNSUPPORTEDOPS-REPORT==, <operation name>, <node name>, <reason>`. This is definitely a great option to utilize when further debugging models in zDLC.
+
+### Example
+
+```
+$  --EmitZHighIR --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA model.onnx --opt-report=NNPAUnsupportedOps
+
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Mul, Mul_28, Element type is not F16 or F32.
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Add, Add_31, Element type is not F16 or F32.
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Div, Div_122, Rank 0 is not supported. zAIU only supports rank in range of (0, 4].
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Add, Add_125, Rank 0 is not supported. zAIU only supports rank in range of (0, 4].
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Mul, Mul_128, Rank 0 is not supported. zAIU only supports rank in range of (0, 4].
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Div, Div_216, Rank 0 is not supported. zAIU only supports rank in range of (0, 4].
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Add, Add_219, Rank 0 is not supported. zAIU only supports rank in range of (0, 4].
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Mul, Mul_222, Rank 0 is not supported. zAIU only supports rank in range of (0, 4].
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Div, Div_310, Rank 0 is not supported. zAIU only supports rank in range of (0, 4].
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Add, Add_313, Rank 0 is not supported. zAIU only supports rank in range of (0, 4].
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Mul, Mul_316, Rank 0 is not supported. zAIU only supports rank in range of (0, 4].
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Div, Div_404, Rank 0 is not supported. zAIU only supports rank in range of (0, 4].
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Add, Add_407, Rank 0 is not supported. zAIU only supports rank in range of (0, 4].
+==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Mul, Mul_410, Rank 0 is not supported. zAIU only supports rank in range of (0, 4].
+```
 
 # Removing IBM Z Deep Learning Compiler <a id="del-image"></a>
 
