@@ -29,7 +29,7 @@
 # Overview <a id="overview"></a>
 
 The IBM Z Deep Learning Compiler uses [ONNX-MLIR](http://onnx.ai/onnx-mlir/) to
-compile .onnx deep learning AI models into shared libaries. The shared libaries
+compile .onnx deep learning AI models into shared libraries. The shared libraries
 can then be integrated into C, C++, Java, or Python applications.
 
 The compiled models take advantage of IBM zSystems technologies including SIMD
