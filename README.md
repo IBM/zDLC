@@ -67,7 +67,7 @@ Determine the desired version of the zdlc image to download from the [IBM Z and 
 Set ZDLC_IMAGE based on the desired IBM zDLC version:
 
 ```
-ZDLC_IMAGE=icr.io/ibmz/zdlc:4.3.0
+ZDLC_IMAGE=icr.io/ibmz/zdlc:5.0.0
 ```
 <br>
 
@@ -188,7 +188,7 @@ the model name (without the .onnx) in that directory.
 Use the `--EmitLib` option to build a `.so` shared library of the model specified by ZDLC_MODEL_NAME in [Environment variables](#setvars):
 
 ```
-docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z14 --mtriple=s390x-ibm-loz ${ZDLC_MODEL_NAME}.onnx
+docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz ${ZDLC_MODEL_NAME}.onnx
 ```
 
 | Command<br>and<br>Parameters | Description |
@@ -199,7 +199,8 @@ docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --m
 | -v ${ZDLC_MODEL_DIR}:/workdir:z | The host bind mount points to the directory with the model ONNX file. `:z` is required to share the volume if SELinux is installed. |
 | --EmitLib | Build the `.so` shared library of the model. |
 | --O3 | Optimize to the highest level. |
-| --mcpu=z14 | The minimum CPU architecture (for generated code instructions). |
+| -march=z17 | The minimum CPU architecture (for generated code instructions). 
+The `--mcpu` option is now replaced with the `-march` option. The `--mcpu` option is still supported but will be deprecated in the future. |
 | --mtriple=s390x-ibm-loz | The target architecture for generated code. |
 | ${ZDLC_MODEL_NAME}.onnx | Builds the `.so` shared library from the specified ONNX file. |
 
@@ -292,7 +293,7 @@ in the container. The expected program output is ten random float values
 Use the `--EmitJNI` option to build a jar file of the model specified by ZDLC_MODEL_NAME in [Environment variables](#setvars).
 
 ```
-docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitJNI --O3 --mcpu=z14 --mtriple=s390x-ibm-loz ${ZDLC_MODEL_NAME}.onnx
+docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitJNI --O3 -march=z17 --mtriple=s390x-ibm-loz ${ZDLC_MODEL_NAME}.onnx
 ```
 
 | Command<br>and<br>Parameters | Description |
@@ -462,9 +463,9 @@ Note that the output values will be random since the input values are random.
 # IBM Z Integrated Accelerator for AI <a id="nnpa-overview"></a>
 
 IBM z16 systems include a new Integrated Accelerator for AI to enable real-time
-AI for transaction processing at scale. The IBM Z Deep Learning Compiler helps
-your new and existing deep learning models take advantage of this new
-accelerator.
+AI for transaction processing at scale. IBM Z17 introduces the second genration 
+of the Telum II processor. The IBM Z Deep Learning Compiler helps your new and
+existing deep learning models take advantage of this new accelerator.
 
 Any IBM zSystem can be used to compile models to take advantage of the
 Integrated Accelerator for AI, including IBM z15 and older machines. However, if
@@ -490,13 +491,13 @@ No changes are required to your model.
 To compile a model to use the Integrated Accelerator for AI, The `--maccel=NNPA`
 option needs to be specified on the command line.
 Additionally, since the accelerator is only available for IBM z16 and greater,
-it is recommended to also use `--mcpu=16`.
+it is recommended to use `-march=z16` or `-march=z17`
 
 Using the [`.so shared library example`](#build-so), the command line to compile
 models that take advantage of the Integrated Accelerator for AI is:
 
 ```
-docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA ${ZDLC_MODEL_NAME}.onnx
+docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz --maccel=NNPA ${ZDLC_MODEL_NAME}.onnx
 ```
 
 Once the model is built to use the IBM Z Integrated Accelerator for AI,
@@ -568,14 +569,14 @@ will run on NNPA.  This can happen for reasons such as:
 * The operation will run faster on the CPU.
 
 For details on obtaining or specifying the target for device placement see:
-* [Open source device placement documentation](https://github.com/onnx/onnx-mlir/blob/0.4.3.0/docs/DevicePlacement-NNPA.md) <a id=":device-placement"></a>
+* [Open source device placement documentation](https://github.com/onnx/onnx-mlir/blob/0.5.0.0/docs/DevicePlacement-NNPA.md) <a id=":device-placement"></a>
 
 ### Examples
 
 1. Save default device placement json to a file while compiling a model.
 
    ```
-   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --nnpa-save-device-placement-file=${ZDLC_MODEL_NAME}.json ${ZDLC_MODEL_NAME}.onnx
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz --maccel=NNPA --nnpa-save-device-placement-file=${ZDLC_MODEL_NAME}.json ${ZDLC_MODEL_NAME}.onnx
    ```
 
    * `--EmitLib` specifies to build a `.so` shared library of the model.
@@ -686,7 +687,7 @@ For details on obtaining or specifying the target for device placement see:
    In this example the device placement json file is used to specify that the `onnx.Gemm` node with name `Plus214-Times212_2` should target device `cpu` instead of `nnpa` as indicated in the device json file from the previous example.
 
    ```
-   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --nnpa-load-device-placement-file=${ZDLC_MODEL_NAME}.json ${ZDLC_MODEL_NAME}.onnx
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz --maccel=NNPA --nnpa-load-device-placement-file=${ZDLC_MODEL_NAME}.json ${ZDLC_MODEL_NAME}.onnx
    ```
 
    * `--EmitLib` specifies to build a `.so` shared library of the model.
@@ -708,8 +709,8 @@ ONNX-MLIR accelerators are not supported by IBM zDLC.
 The following links lists supported operators, operator opset ranges, and any
 operator specific limitations. Operators that are not listed or usage of
 documented limitations are beyond IBM zDLC project scope:
-* [Supported ONNX Operation for CPU](https://github.com/onnx/onnx-mlir/blob/0.4.3.0/docs/SupportedONNXOps-cpu.md) <a id="cpu-ops"></a>
-* [Supported ONNX Operation for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/0.4.3.0/docs/SupportedONNXOps-NNPA.md) <a id="nnpa-ops"></a>
+* [Supported ONNX Operation for CPU](https://github.com/onnx/onnx-mlir/blob/0.5.0.0/docs/SupportedONNXOps-cpu.md) <a id="cpu-ops"></a>
+* [Supported ONNX Operation for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/0.5.0.0/docs/SupportedONNXOps-NNPA.md) <a id="nnpa-ops"></a>
 
 
 ## Versioning Policy <a id="versioning"></a>
@@ -787,7 +788,7 @@ The values for the `--profile-ir` option are as follows:
 
    Compiling the model:
    ```
-   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --profile-ir=Onnx ${ZDLC_MODEL_NAME}.onnx
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz --maccel=NNPA --profile-ir=Onnx ${ZDLC_MODEL_NAME}.onnx
    ```
    Sample output when running model:
    ```
@@ -800,7 +801,7 @@ The values for the `--profile-ir` option are as follows:
 
    Compiling the model:
    ```
-   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --profile-ir=ZHigh ${ZDLC_MODEL_NAME}.onnx
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz --maccel=NNPA --profile-ir=ZHigh ${ZDLC_MODEL_NAME}.onnx
    ```
    Sample output when running model:
    ```
@@ -853,7 +854,7 @@ There are three types of instrument options that can be specified.
 
    Compiling the model:
    ```
-   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --instrument-stage=Onnx --instrument-ops=onnx.* --InstrumentBeforeOp --InstrumentAfterOp --InstrumentReportTime ${ZDLC_MODEL_NAME}.onnx
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz --maccel=NNPA --instrument-stage=Onnx --instrument-ops=onnx.* --InstrumentBeforeOp --InstrumentAfterOp --InstrumentReportTime ${ZDLC_MODEL_NAME}.onnx
    ```
    Sample output when running model:
    ```
@@ -867,7 +868,7 @@ There are three types of instrument options that can be specified.
 
    Compiling the model:
    ```
-   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --instrument-stage=ZHigh --instrument-ops=onnx.*,zhigh.* --InstrumentBeforeOp --InstrumentAfterOp --InstrumentReportTime ${ZDLC_MODEL_NAME}.onnx
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz --maccel=NNPA --instrument-stage=ZHigh --instrument-ops=onnx.*,zhigh.* --InstrumentBeforeOp --InstrumentAfterOp --InstrumentReportTime ${ZDLC_MODEL_NAME}.onnx
    ```
    Sample output when running model:
    ```
@@ -881,7 +882,7 @@ There are three types of instrument options that can be specified.
 
    Compiling the model:
    ```
-   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA --instrument-stage=ZLow --instrument-ops=zlow.* --InstrumentBeforeOp --InstrumentAfterOp --InstrumentReportMemory ${ZDLC_MODEL_NAME}.onnx
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz --maccel=NNPA --instrument-stage=ZLow --instrument-ops=zlow.* --InstrumentBeforeOp --InstrumentAfterOp --InstrumentReportMemory ${ZDLC_MODEL_NAME}.onnx
    ```
    Sample output when running model:
    ```
@@ -905,7 +906,7 @@ The `--opt-report=NNPAUnsupportedOps` flag is used to generate a report to infor
 ### Example
 
 ```
-$  --EmitZHighIR --O3 --mcpu=z16 --mtriple=s390x-ibm-loz --maccel=NNPA model.onnx --opt-report=NNPAUnsupportedOps
+$  --EmitZHighIR --O3 -march=z17 --mtriple=s390x-ibm-loz --maccel=NNPA model.onnx --opt-report=NNPAUnsupportedOps
 
 ==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Mul, Mul_28, Element type is not F16 or F32.
 ==NNPA-UNSUPPORTEDOPS-REPORT==, onnx.Add, Add_31, Element type is not F16 or F32.

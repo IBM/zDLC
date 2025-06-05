@@ -1,4 +1,8 @@
-FROM icr.io/ibmz/python:3.9.16-bullseye
+#
+# © Copyright IBM Corp. 2022, 2025
+#
+
+FROM icr.io/ibmz/python:3.13-bookworm
 RUN apt-get update \
     && apt-get install -y \
         libopenblas-dev \
