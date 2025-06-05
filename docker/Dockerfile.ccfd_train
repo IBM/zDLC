@@ -1,0 +1,29 @@
+#
+# © Copyright IBM Corp. 2025
+#
+
+FROM icr.io/ibmz/ibmz-accelerated-for-pytorch:1.2.0
+
+# Set the user to root explicitly
+USER root
+
+RUN apt-get update \
+    && apt-get install -y \
+        build-essential \
+        gcc \
+        g++ \
+        gfortran \
+    && apt-get clean
+
+# Revert user to default non-root user
+USER ibm-user
+
+RUN pip install \
+    scikit-learn \
+    pandas \
+    tqdm \
+    joblib \
+    sklearn-pandas \
+    onnx
+ENTRYPOINT [ "python3" ]
+CMD [ "--help" ]
