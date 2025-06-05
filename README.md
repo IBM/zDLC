@@ -34,7 +34,7 @@ can then be integrated into C, C++, Java, or Python applications.
 
 The compiled models take advantage of IBM zSystems technologies including SIMD
 on IBM z13 and later and the Integrated Accelerator for AI available on IBM z16
-without changes to the original model.
+and z17 without changes to the original model.
 
 ONNX is an open format for representing AI models. It is open source and vendor
 neutral. Some AI frameworks directly support exporting to .onnx format. For
