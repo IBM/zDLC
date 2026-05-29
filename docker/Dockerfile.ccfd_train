@@ -2,7 +2,7 @@
 # © Copyright IBM Corp. 2025
 #
 
-FROM icr.io/ibmz/ibmz-accelerated-for-pytorch:1.2.0
+FROM icr.io/ibmz/ibmz-accelerated-for-pytorch:1.3.0
 
 # Set the user to root explicitly
 USER root

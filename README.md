@@ -67,7 +67,7 @@ Determine the desired version of the zdlc image to download from the [IBM Z and 
 Set ZDLC_IMAGE based on the desired IBM zDLC version:
 
 ```
-ZDLC_IMAGE=icr.io/ibmz/zdlc:5.0.0
+ZDLC_IMAGE=icr.io/ibmz/zdlc:5.0.1
 ```
 <br>
 
@@ -121,8 +121,8 @@ environment variables, see:
 
 
 ```
-GCC_IMAGE_ID=icr.io/ibmz/gcc:12
-JDK_IMAGE_ID=icr.io/ibmz/openjdk:11
+GCC_IMAGE_ID=icr.io/ibmz/gcc:15.2
+JDK_IMAGE_ID=icr.io/ibmz/openjdk:21-jammy
 ZDLC_CODE_DIR=${ZDLC_DIR}/code
 ZDLC_LIB_DIR=${ZDLC_DIR}/lib
 ZDLC_BUILD_DIR=${ZDLC_DIR}/build
@@ -134,8 +134,8 @@ if [ -z ${ZDLC_DIR} ] || [ ! -d ${ZDLC_DIR} ]; then echo ERROR: ZDLC_DIR must be
 
 | Variable | Description |
 | -------- | ----------- |
-|GCC_IMAGE_ID=icr.io/ibmz/gcc:12|Used in:<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)|
-|JDK_IMAGE_ID=icr.io/ibmz/openjdk:11|Used in:<br>• [Building Java programs to call the model](#run-java)|
+|GCC_IMAGE_ID=icr.io/ibmz/gcc:15.2|Used in:<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)|
+|JDK_IMAGE_ID=icr.io/ibmz/openjdk:21-jammy|Used in:<br>• [Building Java programs to call the model](#run-java)|
 |ZDLC_CODE_DIR=${ZDLC_DIR}/code|Used in:<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building Java programs to call the model](#run-java)<br>• [Running the Python example](#run-python)<br>• [Compiling models to utilize the IBM Z Integrated Accelerator for AI](#nnpa-compile)|
 |ZDLC_LIB_DIR=${ZDLC_DIR}/lib|Used in:<br>• [Running the Python example](#run-python)|
 |ZDLC_BUILD_DIR=${ZDLC_DIR}/build|Used in:<br>• [Building C++ programs to call the model](#run-cpp)<br>• [Building Java programs to call the model](#run-java)|
@@ -569,7 +569,7 @@ will run on NNPA.  This can happen for reasons such as:
 * The operation will run faster on the CPU.
 
 For details on obtaining or specifying the target for device placement see:
-* [Open source device placement documentation](https://github.com/onnx/onnx-mlir/blob/0.5.0.0/docs/DevicePlacement-NNPA.md) <a id=":device-placement"></a>
+* [Open source device placement documentation](https://github.com/onnx/onnx-mlir/blob/0.5.0.1/docs/DevicePlacement-NNPA.md) <a id=":device-placement"></a>
 
 ### Examples
 
@@ -709,8 +709,8 @@ ONNX-MLIR accelerators are not supported by IBM zDLC.
 The following links lists supported operators, operator opset ranges, and any
 operator specific limitations. Operators that are not listed or usage of
 documented limitations are beyond IBM zDLC project scope:
-* [Supported ONNX Operation for CPU](https://github.com/onnx/onnx-mlir/blob/0.5.0.0/docs/SupportedONNXOps-cpu.md) <a id="cpu-ops"></a>
-* [Supported ONNX Operation for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/0.5.0.0/docs/SupportedONNXOps-NNPA.md) <a id="nnpa-ops"></a>
+* [Supported ONNX Operation for CPU](https://github.com/onnx/onnx-mlir/blob/0.5.0.1/docs/SupportedONNXOps-cpu.md) <a id="cpu-ops"></a>
+* [Supported ONNX Operation for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/0.5.0.1/docs/SupportedONNXOps-NNPA.md) <a id="nnpa-ops"></a>
 
 
 ## Versioning Policy <a id="versioning"></a>

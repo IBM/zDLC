@@ -12,7 +12,7 @@ Determine the desired versions of the zdlc image to download from the [IBM Z and
 Set the enviorment variable based on the desired image version:
 
 ```
-ZDLC_IMAGE=icr.io/ibmz/zdlc:5.0.0
+ZDLC_IMAGE=icr.io/ibmz/zdlc:5.0.1
 ```
 <br>
 
