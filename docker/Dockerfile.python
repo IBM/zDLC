@@ -1,12 +1,19 @@
 #
-# © Copyright IBM Corp. 2022, 2025
+# © Copyright IBM Corp. 2022, 2026
 #
 
-FROM icr.io/ibmz/python:3.13-bookworm
+FROM icr.io/ibmz/python:3.14-trixie
 RUN apt-get update \
     && apt-get install -y \
+        # g++ required for Python 3.9 and 3.10 builds
+        g++ \
+        make \
         libopenblas-dev \
+        cmake \
+        clang \
+        git \
     && apt-get clean
+
 RUN pip3 install numpy
 ENTRYPOINT [ "python3" ]
 CMD [ "--help" ]

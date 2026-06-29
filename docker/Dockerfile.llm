@@ -1,0 +1,65 @@
+#
+# © Copyright IBM Corp. 2025, 2026
+#
+
+FROM registry.access.redhat.com/ubi10/ubi:latest
+
+ARG UID
+ARG GID
+
+# Force unbuffered output for better logging visibility
+ENV PYTHONUNBUFFERED=1
+# Avoid s390x SIGSEGV in upb (C protobuf) on big-endian — use pure-Python protobuf instead.
+# Crash occurs in upb_strtable_lookup2 during descriptor registration on import of onnxscript/onnx.
+ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+
+# Set the user to root for package installation
+USER root
+
+# Install system packages required for running LLM examples
+RUN dnf -y update \
+    && dnf -y install \
+        python3.12-devel \
+        python3.12-pip \
+        gcc \
+        gcc-c++ \
+        git \
+        curl \
+        openblas \
+        openblas-devel \
+        lapack \
+    && python3 -m pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && dnf clean all \
+    && rm -rf /var/cache/dnf
+
+# Create a non-root user for running the container
+# This matches the user ID and group ID passed during build for proper file permissions
+RUN groupadd -g $GID user \
+    && useradd -u $UID -g $GID -m user \
+    && mkdir -p /home/user/workdir \
+    && chown -R user:$GID /home/user
+
+USER user
+WORKDIR /home/user/workdir
+
+# Add Python user packages to PATH
+ENV PATH="/home/user/.local/bin:${PATH}"
+
+# Install Python packages required for LLM examples
+# - PyTorch: Deep learning framework (includes torch.onnx)
+# - Transformers: Hugging Face library for working with pre-trained models like BERT
+# - onnxscript: Required for torch.onnx.export() functionality
+# - numpy, psutil: Core dependencies
+RUN curl -L --fail \
+        --output /tmp/torch-2.11.0+cpu-cp312-cp312-linux_s390x.whl \
+        https://download-r2.pytorch.org/whl/cpu/torch-2.11.0%2Bcpu-cp312-cp312-linux_s390x.whl \
+    && pip3 install --no-cache-dir --user /tmp/torch-2.11.0+cpu-cp312-cp312-linux_s390x.whl \
+    && pip3 install --no-cache-dir --user \
+        numpy==2.0.1 \
+        psutil \
+        transformers==4.51.1 \
+        onnx==1.21.0 \
+        onnxscript==0.6.2
+
+ENTRYPOINT [ "python3" ]
+CMD [ "--help" ]

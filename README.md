@@ -17,6 +17,7 @@
         * [Specifying input tensor dimensions](#nnpa-tips-shape)
         * [View operation targets at compile time](#nnpa-tips-ops-target)
         * [Device placement of targets at compile time](#nnpa-device-placement)
+* [Compiler Debug Options](#compiler-debug)
 * [Obtaining IBM Z Deep Learning Compiler debug instrumentation](#inst-debug)
 * [Scope and Versioning](#scope-and-versioning)
     * [Project Scope](#scope)
@@ -67,7 +68,7 @@ Determine the desired version of the zdlc image to download from the [IBM Z and 
 Set ZDLC_IMAGE based on the desired IBM zDLC version:
 
 ```
-ZDLC_IMAGE=icr.io/ibmz/zdlc:5.0.1
+ZDLC_IMAGE=icr.io/ibmz/zdlc:5.1.0
 ```
 <br>
 
@@ -569,129 +570,179 @@ will run on NNPA.  This can happen for reasons such as:
 * The operation will run faster on the CPU.
 
 For details on obtaining or specifying the target for device placement see:
-* [Open source device placement documentation](https://github.com/onnx/onnx-mlir/blob/0.5.0.1/docs/DevicePlacement-NNPA.md) <a id=":device-placement"></a>
+* [Open source device placement documentation](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/JsonConfigFile-NNPA.md) <a id=":device-placement"></a>
 
 ### Examples
 
 1. Save default device placement json to a file while compiling a model.
 
    ```
-   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz --maccel=NNPA --nnpa-save-device-placement-file=${ZDLC_MODEL_NAME}.json ${ZDLC_MODEL_NAME}.onnx
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz --maccel=NNPA --save-config-file=${ZDLC_MODEL_NAME}.json ${ZDLC_MODEL_NAME}.onnx
    ```
 
    * `--EmitLib` specifies to build a `.so` shared library of the model.
-   * `--nnpa-save-device-placement-file` option specifies to save the device placement for the model's operations to a json file.
+   * `--save-config-file` option specifies to save the device placement for the model's operations to a json file.
 
 
-   Sample content of the model's output device placement json file. Notice the `onnx.Gemm` node with name `Plus214-Times212_2`  is targeted to device `nnpa`:
-   ```
-   {
-       "device_placement": [
-           {
-               "device": "nnpa",
-               "node_type": "onnx.Conv",
-               "onnx_node_name": "Plus30-Convolution28-Initializer_Parameter6_0"
-           },
-           {
-               "device": "nnpa",
-               "node_type": "onnx.Relu",
-               "onnx_node_name": "ReLU32"
-           },
-           {
-               "device": "nnpa",
-               "node_type": "onnx.MaxPoolSingleOut",
-               "onnx_node_name": "Pooling66"
-           },
-           {
-               "device": "nnpa",
-               "node_type": "onnx.Conv",
-               "onnx_node_name": "Plus112-Convolution110-Initializer_Parameter88_1"
-           },
-           {
-               "device": "nnpa",
-               "node_type": "onnx.Relu",
-               "onnx_node_name": "ReLU114"
-           },
-           {
-               "device": "nnpa",
-               "node_type": "onnx.MaxPoolSingleOut",
-               "onnx_node_name": "Pooling160"
-           },
-           {
-               "device": "",
-               "node_type": "onnx.Reshape",
-               "onnx_node_name": "Times212_reshape0"
-           },
-           {
-               "device": "nnpa",
-               "node_type": "onnx.Gemm",
-               "onnx_node_name": "Plus214-Times212_2"
-           }
-       ]
-   }
-   ```
+   Sample content of the model's output nnpa ops config json file. Notice the `onnx.Gemm` node with name `Plus214-Times212_2` is targeted to device `nnpa`:
+```
+{
+    "nnpa_ops_config": [
+        {...},
+        {
+        "pattern": {
+            "match": {
+            "inputs": {
+                "0": {
+                "dims": {
+                    "0": "1",
+                    "1": "256"
+                },
+                "rank": "2",
+                "type": "f32"
+                },
+                "1": {
+                "dims": {
+                    "0": "256",
+                    "1": "10"
+                },
+                "rank": "2",
+                "type": "f32"
+                },
+                "2": {
+                "dims": {
+                    "0": "1",
+                    "1": "10"
+                },
+                "rank": "2",
+                "type": "f32"
+                }
+            },
+            "node_type": "onnx.Gemm",
+            "onnx_node_name": "Plus214-Times212_2",
+            "outputs": {
+                "0": {
+                "dims": {
+                    "0": "1",
+                    "1": "10"
+                },
+                "rank": "2",
+                "type": "f32"
+                }
+            }
+            },
+            "rewrite": {
+            "device": "nnpa"
+            }
+        }
+        }
+    ]
+}
+```
 
 2. Edit the ${ZDLC_MODEL_NAME}.json file and change target for onnx.Gemm operation `Plus214-Times212_2`.
 
-   Sample content of the edited model's input device placement json file.
-   Notice the `onnx.Gemm` node with name `Plus214-Times212_2` has been modified to target device `cpu` instead of `nnpa`:
-   ```
-   {
-       "device_placement": [
-           {
-               "device": "nnpa",
-               "node_type": "onnx.Conv",
-               "onnx_node_name": "Plus30-Convolution28-Initializer_Parameter6_0"
-           },
-           {
-               "device": "nnpa",
-               "node_type": "onnx.Relu",
-               "onnx_node_name": "ReLU32"
-           },
-           {
-               "device": "nnpa",
-               "node_type": "onnx.MaxPoolSingleOut",
-               "onnx_node_name": "Pooling66"
-           },
-           {
-               "device": "nnpa",
-               "node_type": "onnx.Conv",
-               "onnx_node_name": "Plus112-Convolution110-Initializer_Parameter88_1"
-           },
-           {
-               "device": "nnpa",
-               "node_type": "onnx.Relu",
-               "onnx_node_name": "ReLU114"
-           },
-           {
-               "device": "nnpa",
-               "node_type": "onnx.MaxPoolSingleOut",
-               "onnx_node_name": "Pooling160"
-           },
-           {
-               "device": "",
-               "node_type": "onnx.Reshape",
-               "onnx_node_name": "Times212_reshape0"
-           },
-           {
-               "device": "cpu",
-               "node_type": "onnx.Gemm",
-               "onnx_node_name": "Plus214-Times212_2"
-           }
-       ]
-   }
-   ```
+Sample content of the edited model's input device placement json file.
+Notice the `onnx.Gemm` node with name `Plus214-Times212_2` has been modified to target device `cpu` instead of `nnpa`:
+```
+{
+    "nnpa_ops_config": [
+        {...},
+        {
+        "pattern": {
+            "match": {
+            "inputs": {
+                "0": {
+                "dims": {
+                    "0": "1",
+                    "1": "256"
+                },
+                "rank": "2",
+                "type": "f32"
+                },
+                "1": {
+                "dims": {
+                    "0": "256",
+                    "1": "10"
+                },
+                "rank": "2",
+                "type": "f32"
+                },
+                "2": {
+                "dims": {
+                    "0": "1",
+                    "1": "10"
+                },
+                "rank": "2",
+                "type": "f32"
+                }
+            },
+            "node_type": "onnx.Gemm",
+            "onnx_node_name": "Plus214-Times212_2",
+            "outputs": {
+                "0": {
+                "dims": {
+                    "0": "1",
+                    "1": "10"
+                },
+                "rank": "2",
+                "type": "f32"
+                }
+            }
+            },
+            "rewrite": {
+            "device": "cpu"
+            }
+        }
+        }
+    ]
+}
+```
 
 3. Build a model and loading the device placement specification for the model's operations from a json file.
 
    In this example the device placement json file is used to specify that the `onnx.Gemm` node with name `Plus214-Times212_2` should target device `cpu` instead of `nnpa` as indicated in the device json file from the previous example.
 
    ```
-   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz --maccel=NNPA --nnpa-load-device-placement-file=${ZDLC_MODEL_NAME}.json ${ZDLC_MODEL_NAME}.onnx
+   docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz --maccel=NNPA --config-file=${ZDLC_MODEL_NAME}.json ${ZDLC_MODEL_NAME}.onnx
    ```
 
    * `--EmitLib` specifies to build a `.so` shared library of the model.
-   * `--nnpa-load-device-placement-file` option specifies to load the device placement specification for the model's operations from a json file.
+   * `--config-file` option specifies to load the device placement specification for the model's operations from a json file.
+
+<br>
+
+# Compiler Debug Options <a id="compiler-debug"></a>
+
+The IBM Z Deep Learning Compiler provides compile-time debug options that add debugging information to the compiled model libraries. This information can be used with external debugging tools such as `gdb` to troubleshoot issues during model development and testing.
+
+<br>
+
+## Enable Debug Information <a id="enable-debug-info"></a>
+
+The `--enable-debug-info` flag adds debug information to the compiled `.so` file. This debug information includes symbol tables, line numbers, and other metadata that debugging tools like `gdb` can use to provide meaningful stack traces and enable source-level debugging.
+
+When compiling from an `.onnx` file, it is recommended to also use the `--preserveMLIR` flag to preserve the MLIR (Multi-Level Intermediate Representation) information, which provides additional context for debugging.
+
+### Example
+
+Compiling a model with debug information:
+
+```
+docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz --enable-debug-info --preserveMLIR ${ZDLC_MODEL_NAME}.onnx
+```
+
+| Command<br>and<br>Parameters | Description |
+| ----------- | -------------------------------------------------------- |
+| --enable-debug-info | Add debug information to the compiled `.so` file for use with debugging tools like `gdb`. |
+| --preserveMLIR | (Recommended for `.onnx` files) Preserve MLIR intermediate representation information for enhanced debugging context. |
+
+### Notes
+
+* Debug information increases the size of the compiled `.so` file.
+* The debug information can be used with `gdb` and other debugging tools that support DWARF debug format.
+* For detailed information on using debug information for testing and troubleshooting, [Open source testing documentation](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/Testing.md).
+
 
 <br>
 
@@ -709,8 +760,8 @@ ONNX-MLIR accelerators are not supported by IBM zDLC.
 The following links lists supported operators, operator opset ranges, and any
 operator specific limitations. Operators that are not listed or usage of
 documented limitations are beyond IBM zDLC project scope:
-* [Supported ONNX Operation for CPU](https://github.com/onnx/onnx-mlir/blob/0.5.0.1/docs/SupportedONNXOps-cpu.md) <a id="cpu-ops"></a>
-* [Supported ONNX Operation for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/0.5.0.1/docs/SupportedONNXOps-NNPA.md) <a id="nnpa-ops"></a>
+* [Supported ONNX Operation for CPU](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/SupportedONNXOps-cpu.md) <a id="cpu-ops"></a>
+* [Supported ONNX Operation for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/SupportedONNXOps-NNPA.md) <a id="nnpa-ops"></a>
 
 
 ## Versioning Policy <a id="versioning"></a>
@@ -772,15 +823,16 @@ Instrumention debug information can be obtained during model runtime using three
 
 ## Profile IR Option<a id="profile-ir"></a>
 
-Spcifying the `--profile-ir` option for the IBM Z Deep Learning Compiler to cause instrumention debug information to be printed during model runtime.
+Spcifying the `--profile-ir` or `-profile-ir-with-sig` option for the IBM Z Deep Learning Compiler to cause instrumention debug information to be printed during model runtime.
 
-The values for the `--profile-ir` option are as follows:
+The values for the `--profile-ir` or `-profile-ir-with-sig` option are as follows:
 
   |Option Value|Description|
   |-----------|--------------------------------------------------------|
   |None|No profiling. This is the defualt.|
   |Onnx|Profile for onnx ops.|
   |ZHigh|Profile for NNPA zhigh ops.|
+
 
 ### Examples
 
