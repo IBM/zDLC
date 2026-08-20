@@ -1,29 +1,47 @@
 #
-# © Copyright IBM Corp. 2025
+# © Copyright IBM Corp. 2025, 2026
 #
 
-FROM icr.io/ibmz/ibmz-accelerated-for-pytorch:1.3.0
+FROM icr.io/ibmz/ibmz-accelerated-for-pytorch:1.5.0
+
+ARG UID
+ARG GID
 
 # Set the user to root explicitly
 USER root
 
-RUN apt-get update \
-    && apt-get install -y \
-        build-essential \
+RUN dnf -y update \
+    && dnf -y install \
+        make \
+        cmake \
         gcc \
-        g++ \
-        gfortran \
-    && apt-get clean
+        gcc-c++ \
+        gcc-gfortran \
+        automake \
+        autoconf \
+        libtool \
+        git \
+	    python3-devel \
+    && dnf clean all \
+    && rm -rf /var/cache/dnf
 
-# Revert user to default non-root user
-USER ibm-user
 
-RUN pip install \
-    scikit-learn \
-    pandas \
-    tqdm \
-    joblib \
-    sklearn-pandas \
-    onnx
-ENTRYPOINT [ "python3" ]
+# Revert to a default non-root user
+RUN groupadd -g $GID zdlc_user && \
+    useradd -u $UID -g $GID -m zdlc_user
+USER zdlc_user
+WORKDIR /home/zdlc_user
+
+# Add Python libraries to the PATH
+ENV PATH="/home/zdlc_user/.local/bin:${PATH}"
+
+RUN pip install --no-cache-dir \
+    pandas==2.1.4 \
+    scikit-learn==1.6.1 \
+    tqdm==4.66.4 \
+    joblib==1.4.2 \
+    sklearn-pandas==2.2.0 \
+    onnxscript==0.7.1
+
+ENTRYPOINT [ "python" ]
 CMD [ "--help" ]
