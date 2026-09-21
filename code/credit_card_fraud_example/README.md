@@ -1,3 +1,9 @@
+# Credit Card Fraud Detection — Developer Reference
+
+> **Full documentation:** See [Credit Card Fraud Detection](../../docs/use_cases/credit_card_fraud.md) for the complete step-by-step guide including training, compilation, NNPA acceleration, and inference.
+>
+> This file is a developer-level reference for the scripts in this directory.
+
 # Running the Credit Card Fraud Detection Sample Program <a id="ccfd-example"></a>
 
 ## Download the IBM Z Deep Learning Compiler container <a id="container"></a>
