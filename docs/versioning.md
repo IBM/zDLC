@@ -1,3 +1,10 @@
+---
+layout: default
+title: Scope and Versioning
+nav_order: 7
+---
+
+
 # Scope and Versioning Policy
 
 ## Project scope

@@ -1,0 +1,44 @@
+title: IBM Z Deep Learning Compiler
+description: Compile ONNX models into optimized shared libraries for IBM Z systems.
+
+theme: just-the-docs
+
+url: ""
+baseurl: ""
+
+# Navigation order is controlled by front matter `nav_order` in each page.
+# Pages without nav_order appear alphabetically after ordered pages.
+
+# Enable search
+search_enabled: true
+
+# Aux links in the top-right corner
+aux_links:
+  "GitHub":
+    - "https://github.com/IBM/zDLC"
+
+aux_links_new_tab: true
+
+# Footer
+footer_content: "IBM Z Deep Learning Compiler documentation."
+
+# Back to top
+back_to_top: true
+back_to_top_text: "Back to top"
+
+# Heading anchor links
+heading_anchors: true
+
+# Color scheme — use default (light)
+color_scheme: light
+
+# Exclude non-doc files from the Jekyll build
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - "*.sh"
+  - .github/
+  - docker/
+  - code/
+  - LICENSE
+  - renovate.json

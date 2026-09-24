@@ -1,6 +1,13 @@
+---
+layout: default
+title: Compiler Options
+nav_order: 4
+---
+
+
 # Compiler Options Reference
 
-The IBM zDLC compiler is invoked via `docker run` with the `zdlc` image. This page is a complete reference for all supported options. For a quick introduction, see [Getting Started](getting_started.md).
+The IBM zDLC compiler is invoked via `docker run` with the `zdlc` image. This page is a complete reference for all supported options. For a quick introduction, see [Getting Started](getting_started.html).
 
 ---
 
@@ -88,7 +95,7 @@ docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} \
 | `--maccel=NNPA` | Route supported ONNX operators to the IBM Z Integrated Accelerator for AI (NNPA) instead of the CPU. Requires `-march=z16` or higher. |
 | `--nnpa-quant-dynamic` | Enable dynamic 8-bit integer quantization for NNPA matrix multiplications (Telum II / z17 feature). |
 
-See [IBM Z Integrated Accelerator for AI](accelerator.md) for a full guide including device placement and performance tuning.
+See [IBM Z Integrated Accelerator for AI](accelerator.html) for a full guide including device placement and performance tuning.
 
 ---
 
@@ -154,7 +161,7 @@ See [Device Placement](accelerator.md#device-placement) for a full walk-through 
 | `--InstrumentReportTime` | Report wall-clock time at each instrumentation point. |
 | `--InstrumentReportMemory` | Report virtual memory usage at each instrumentation point. |
 
-See [Troubleshooting and Debug](troubleshooting.md) for full examples of each option.
+See [Troubleshooting and Debug](troubleshooting.html) for full examples of each option.
 
 ---
 

@@ -1,3 +1,11 @@
+---
+layout: default
+title: Decoder LLM Inference
+parent: Use Cases
+nav_order: 4
+---
+
+
 # Use Case: Decoder LLM Inference
 
 > **Coming Soon**
@@ -27,8 +35,8 @@ The following decoder and encoder-decoder models from the ONNX Model Zoo have al
 | [t5-encoder-12](https://github.com/onnx/models/tree/main/validated/text/machine_comprehension/t5) | Encoder |
 | [t5-decoder-with-lm-head-12](https://github.com/onnx/models/tree/main/validated/text/machine_comprehension/t5) | Decoder with LM head |
 
-See [models/README.md](../../models/README.md) for the full verified model list.
+See [Verified ONNX Models](https://github.com/IBM/zDLC/blob/main/models/README.md) for the full verified model list.
 
 ---
 
-In the meantime, refer to [Encoder LLM Inference](encoder_llm.md) for a complete end-to-end example, and [Getting Started](../getting_started.md) to compile any ONNX model manually.
+In the meantime, refer to [Encoder LLM Inference](encoder_llm.html) for a complete end-to-end example, and [Getting Started](../getting_started.html) to compile any ONNX model manually.

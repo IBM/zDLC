@@ -1,3 +1,10 @@
+---
+layout: default
+title: Troubleshooting and Debug
+nav_order: 6
+---
+
+
 # Troubleshooting and Debug
 
 IBM zDLC provides several compile-time options that embed diagnostic information into compiled models. This page covers all debug and instrumentation options with examples.
