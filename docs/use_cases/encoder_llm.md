@@ -1,10 +1,18 @@
+---
+layout: default
+title: Encoder LLM Inference (BERT)
+parent: Use Cases
+nav_order: 1
+---
+
+
 # Use Case: Encoder LLM Inference (BERT)
 
 This guide walks through compiling and running encoder-based LLM inference on IBM Z using IBM zDLC. The example uses BERT but applies to any encoder-based transformer architecture.
 
 **What you'll build:** A Python application that runs BERT inference accelerated by the IBM Z Integrated Accelerator for AI (NNPA), covering four use cases: Masked Language Modeling, Semantic Similarity, Embeddings, and Question Answering.
 
-**Prerequisites:** Complete [Getting Started](../getting_started.md) first and have your environment variables set.
+**Prerequisites:** Complete [Getting Started](../getting_started.html) first and have your environment variables set.
 
 ---
 
@@ -99,7 +107,7 @@ docker run --rm \
   ${ZDLC_MODEL_NAME}/${ZDLC_MODEL_NAME}.onnx
 ```
 
-See [Compiler Options](../compiler_options.md) for a full flag reference and [IBM Z Integrated Accelerator for AI](../accelerator.md) for NNPA tuning guidance.
+See [Compiler Options](../compiler_options.html) for a full flag reference and [IBM Z Integrated Accelerator for AI](../accelerator.html) for NNPA tuning guidance.
 
 ---
 
@@ -195,6 +203,6 @@ docker run --rm \
 
 | File | Description |
 |---|---|
-| [`code/LLM/download_bert_model.py`](../../code/LLM/download_bert_model.py) | Downloads and converts BERT models from Hugging Face to ONNX. |
-| [`code/LLM/llm_example.py`](../../code/LLM/llm_example.py) | Runs inference for MLM, EMBED, SS, and QNA tasks. |
-| [`docker/Dockerfile.llm`](../../docker/Dockerfile.llm) | Container environment for the LLM examples. |
+| [`code/LLM/download_bert_model.py`](https://github.com/IBM/zDLC/blob/main/code/LLM/download_bert_model.py) | Downloads and converts BERT models from Hugging Face to ONNX. |
+| [`code/LLM/llm_example.py`](https://github.com/IBM/zDLC/blob/main/code/LLM/llm_example.py) | Runs inference for MLM, EMBED, SS, and QNA tasks. |
+| [`docker/Dockerfile.llm`](https://github.com/IBM/zDLC/blob/main/docker/Dockerfile.llm) | Container environment for the LLM examples. |

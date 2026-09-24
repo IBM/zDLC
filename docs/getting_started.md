@@ -1,3 +1,9 @@
+---
+layout: default
+title: Getting Started
+nav_order: 2
+---
+
 # Getting Started with IBM Z Deep Learning Compiler
 
 ## Overview
@@ -84,7 +90,7 @@ wget --directory-prefix $ZDLC_MODEL_DIR \
   https://github.com/onnx/models/raw/main/validated/vision/classification/mnist/model/${ZDLC_MODEL_NAME}.onnx
 ```
 
-Or browse [models/README.md](../models/README.md) for the full list of verified models, or [ONNX Support Tools](https://onnx.ai/supported-tools.html) for converters from other frameworks.
+Or browse [Verified ONNX Models](https://github.com/IBM/zDLC/blob/main/models/README.md) for the full list of verified models, or [ONNX Support Tools](https://onnx.ai/supported-tools.html) for converters from other frameworks.
 
 ---
 
@@ -109,8 +115,8 @@ docker run --rm \
 
 The compiled `.so` is written to `${ZDLC_MODEL_DIR}`.
 
-> For a full description of all compiler flags, see [Compiler Options](compiler_options.md).  
-> To target the Integrated Accelerator for AI, see [IBM Z Integrated Accelerator for AI](accelerator.md).
+> For a full description of all compiler flags, see [Compiler Options](compiler_options.html).  
+> To target the Integrated Accelerator for AI, see [IBM Z Integrated Accelerator for AI](accelerator.html).
 
 ---
 
@@ -120,9 +126,9 @@ Choose the language that fits your application:
 
 | Language | Next step |
 |---|---|
-| **Python** | [Encoder LLM use case](use_cases/encoder_llm.md) or [Credit Card Fraud Detection](use_cases/credit_card_fraud.md) for end-to-end Python examples. |
-| **C++** | See the [C++ runtime API](../code/deep_learning_compiler_run_model_example.cpp) and refer to the compiler options page for `--EmitLib` build flags. |
-| **Java** | See the [Java runtime API](../code/deep_learning_compiler_run_model_example.java) and build with `--EmitJNI`. |
+| **Python** | [Encoder LLM use case](use_cases/encoder_llm.html) or [Credit Card Fraud Detection](use_cases/credit_card_fraud.html) for end-to-end Python examples. |
+| **C++** | See the [C++ runtime API](https://github.com/IBM/zDLC/blob/main/code/deep_learning_compiler_run_model_example.cpp) and refer to the compiler options page for `--EmitLib` build flags. |
+| **Java** | See the [Java runtime API](https://github.com/IBM/zDLC/blob/main/code/deep_learning_compiler_run_model_example.java) and build with `--EmitJNI`. |
 
 ---
 

@@ -1,3 +1,10 @@
+---
+layout: default
+title: IBM Z Integrated Accelerator for AI
+nav_order: 5
+---
+
+
 # IBM Z Integrated Accelerator for AI (NNPA)
 
 IBM z16 and z17 systems include an Integrated Accelerator for AI (also called NNPA — Neural Network Processing Assist) built into the Telum processor. IBM zDLC can automatically route supported ONNX operations to this accelerator, giving you real-time AI inference at transaction scale with no changes to your model.

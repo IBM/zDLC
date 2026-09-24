@@ -1,10 +1,18 @@
+---
+layout: default
+title: LLM Serving with Triton
+parent: Use Cases
+nav_order: 2
+---
+
+
 # Use Case: LLM Inference with Triton Inference Server
 
 This guide shows how to serve IBM zDLC-compiled models using the [IBM Z Accelerated for NVIDIA Triton™ Inference Server](https://github.com/IBM/ibmz-accelerated-for-nvidia-triton-inference-server), enabling HTTP/gRPC-based inference suitable for production deployments.
 
 **What you'll build:** A Triton Inference Server instance running on IBM Z serving a zDLC-compiled BERT model via REST API, with both a "use the provided model" path and a "bring your own model" path.
 
-**Prerequisites:** Complete [Getting Started](../getting_started.md) and the [Encoder LLM](encoder_llm.md) example first — you need a compiled `model.so` before proceeding.
+**Prerequisites:** Complete [Getting Started](../getting_started.html) and the [Encoder LLM](encoder_llm.html) example first — you need a compiled `model.so` before proceeding.
 
 ---
 
@@ -32,7 +40,7 @@ Replace `X.Y.Z` with the version available in the [IBM Z and LinuxONE Container 
 
 ## Step 2 — Compile your model with IBM zDLC
 
-If you already have a compiled `model.so` from the [Encoder LLM](encoder_llm.md) example, skip this step.
+If you already have a compiled `model.so` from the [Encoder LLM](encoder_llm.html) example, skip this step.
 
 To compile `bert-large-uncased` with NNPA acceleration:
 
@@ -204,4 +212,4 @@ For full backend documentation see the [IBM Z Accelerated for NVIDIA Triton™ I
 - Decoder model serving (GPT-2, T5)
 - Triton Model Analyzer integration for throughput/latency tuning
 
-See [Decoder LLM Inference](decoder_llm.md) for the decoder roadmap.
+See [Decoder LLM Inference](decoder_llm.html) for the decoder roadmap.

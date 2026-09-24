@@ -1,10 +1,18 @@
+---
+layout: default
+title: Credit Card Fraud Detection
+parent: Use Cases
+nav_order: 3
+---
+
+
 # Use Case: Credit Card Fraud Detection
 
 This guide walks through a complete end-to-end example: training a fraud detection model in PyTorch, exporting it to ONNX, compiling it with IBM zDLC, and running accelerated inference on IBM Z.
 
 **What you'll build:** A Python application that scores financial transactions against a trained fraud detection model, compiled to run on the IBM Z Integrated Accelerator for AI (NNPA).
 
-**Prerequisites:** Complete [Getting Started](../getting_started.md) first and have your environment variables set. You will also need the [Credit Card Fraud dataset](https://github.com/IBM/TabFormer/tree/main/data/credit_card).
+**Prerequisites:** Complete [Getting Started](../getting_started.html) first and have your environment variables set. You will also need the [Credit Card Fraud dataset](https://github.com/IBM/TabFormer/tree/main/data/credit_card).
 
 ---
 
@@ -72,7 +80,7 @@ docker run --rm \
 
 The compiled `ccfd.so` is written to `${ZDLC_MODEL_DIR}`.
 
-See [Compiler Options](../compiler_options.md) for a full flag reference and [IBM Z Integrated Accelerator for AI](../accelerator.md) for NNPA tuning guidance.
+See [Compiler Options](../compiler_options.html) for a full flag reference and [IBM Z Integrated Accelerator for AI](../accelerator.html) for NNPA tuning guidance.
 
 ---
 
@@ -128,8 +136,8 @@ Output Tensor has shape (1, 1) and values:
 
 | File | Description |
 |---|---|
-| [`code/credit_card_fraud_example/credit_card_fraud_training.py`](../../code/credit_card_fraud_example/credit_card_fraud_training.py) | Trains the fraud detection model and exports it to ONNX. |
-| [`code/credit_card_fraud_example/credit_card_fraud_inference.py`](../../code/credit_card_fraud_example/credit_card_fraud_inference.py) | Runs inference using the compiled `.so` model. |
-| [`code/credit_card_fraud_example/credit_card_fraud_data_utils.py`](../../code/credit_card_fraud_example/credit_card_fraud_data_utils.py) | Data loading and preprocessing utilities. |
-| [`docker/Dockerfile.ccfd_train`](../../docker/Dockerfile.ccfd_train) | Container environment for training. |
-| [`docker/Dockerfile.python`](../../docker/Dockerfile.python) | Container environment for Python inference. |
+| [`code/credit_card_fraud_example/credit_card_fraud_training.py`](https://github.com/IBM/zDLC/blob/main/code/credit_card_fraud_example/credit_card_fraud_training.py) | Trains the fraud detection model and exports it to ONNX. |
+| [`code/credit_card_fraud_example/credit_card_fraud_inference.py`](https://github.com/IBM/zDLC/blob/main/code/credit_card_fraud_example/credit_card_fraud_inference.py) | Runs inference using the compiled `.so` model. |
+| [`code/credit_card_fraud_example/credit_card_fraud_data_utils.py`](https://github.com/IBM/zDLC/blob/main/code/credit_card_fraud_example/credit_card_fraud_data_utils.py) | Data loading and preprocessing utilities. |
+| [`docker/Dockerfile.ccfd_train`](https://github.com/IBM/zDLC/blob/main/docker/Dockerfile.ccfd_train) | Container environment for training. |
+| [`docker/Dockerfile.python`](https://github.com/IBM/zDLC/blob/main/docker/Dockerfile.python) | Container environment for Python inference. |
