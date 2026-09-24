@@ -126,7 +126,7 @@ See [IBM Z Integrated Accelerator for AI](accelerator.html) for a full guide inc
 | `--save-config-file=<file>` | Save the default NNPA device placement decisions to a JSON file for inspection or manual editing. |
 | `--config-file=<file>` | Load a device placement JSON file to override which operations target NNPA vs CPU. |
 
-See [Device Placement](accelerator.md#device-placement) for a full walk-through with examples.
+See [Device Placement](accelerator.html#device-placement) for a full walk-through with examples.
 
 ---
 

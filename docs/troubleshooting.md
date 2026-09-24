@@ -45,6 +45,8 @@ For more on using debug info in testing see [ONNX-MLIR Testing documentation](ht
 | `Onnx` | All ONNX-level operations. |
 | `ZHigh` | NNPA zhigh-level operations. |
 
+Use `--profile-ir=<value>` or `--profile-ir-with-sig=<value>` — both accept the same values. The `-with-sig` variant additionally prints tensor signatures (shapes and types) at each probe point.
+
 ### Example — profile ONNX ops
 
 Compile:
@@ -77,7 +79,7 @@ Sample runtime output:
 #11) after  zhigh.Conv2D Time elapsed: 0.000161 accumulated: 1692617935.010940 (...)
 ```
 
-> **Important:** Call `OMInstrumentInit` in your application before loading the model shared library, otherwise instrumentation output will not appear.
+> ⚠️ **Required:** You must call `OMInstrumentInit` in your application **before** loading the model shared library. If this call is missing, all instrumentation output is silently suppressed — no error will be shown.
 
 ---
 
