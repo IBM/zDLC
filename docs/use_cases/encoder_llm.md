@@ -24,6 +24,7 @@ This guide walks through compiling and running encoder-based LLM inference on IB
 | Embeddings | `--task EMBED` | Produces contextual vector embeddings for a sentence. |
 | Semantic Similarity | `--task SS` | Scores how semantically similar two sentences are. |
 | Question Answering | `--task QNA` | Extracts an answer from a passage given a question. |
+| Text Summarization | `--task SUMMARIZE` | Extracts key information from longer documents and generates a concise summary. |
 
 ---
 

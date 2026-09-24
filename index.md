@@ -27,6 +27,7 @@ IBM zDLC is built on [ONNX-MLIR](http://onnx.ai/onnx-mlir/) and is distributed a
 | [Encoder LLM Inference (BERT)](docs/use_cases/encoder_llm.html) | End-to-end BERT inference with NNPA acceleration — MLM, embeddings, semantic similarity, and QA. |
 | [LLM Serving with Triton Inference Server](docs/use_cases/triton_llm.html) | Serve zDLC-compiled models via HTTP/gRPC using the IBM Z Triton Inference Server. |
 | [Credit Card Fraud Detection](docs/use_cases/credit_card_fraud.html) | Train a PyTorch model, compile it with zDLC, and run accelerated fraud scoring on IBM Z. |
+| [C++ and Java Inference](docs/use_cases/cpp_java.html) | Build and run C++ and Java applications against zDLC-compiled models. |
 | [Decoder LLM Inference](docs/use_cases/decoder_llm.html) | *(Coming soon)* GPT-2 and T5 decoder inference examples. |
 
 ### Reference
