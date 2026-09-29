@@ -12,7 +12,7 @@ Determine the desired versions of the zdlc image to download from the [IBM Z and
 Set the enviorment variable based on the desired image version:
 
 ```
-ZDLC_IMAGE=icr.io/ibmz/zdlc:5.1.0
+ZDLC_IMAGE=icr.io/ibmz/zdlc:5.1.1
 ```
 <br>
 
@@ -118,19 +118,22 @@ tar -xvzf /path/to/transactions.tgz -C ${ZDLC_DATA_DIR}
 ### Building the IBM Z Accelerated for Pytorch container image
 
 ```
-docker build -f ${ZDLC_DIR}/docker/Dockerfile.ccfd_train -t ccfd-pytorch-train-example:latest .
+cd ${ZDLC_DIR}
+docker build -f ${ZDLC_DIR}/docker/Dockerfile.ccfd_train --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t ccfd-pytorch-train-example:latest .
 ```
 
 | Command<br>and<br>Parameters | Description |
 | ----------- | -------------------------------------------------------- |
 | docker build | Build the container image. |
 | -f docker/Dockerfile.ccfd_train | Use `docker/Dockerfile.ccfd_train` as the Dockerfile for this container build. |
+| --build-arg UID=$(id -u) | Set the user's user id inside the container the same as the user's user id creating the container. |
+| --build-arg GID=$(id -g) | Set the user's group id inside the container the same as the user's group id creating the container. |
 | -t ccfd-pytorch-train-example:latest | Build the image with the `image:tag` specification of `ccfd-pytorch-train-example:latest`. |
 
 ### Training the CCFD model
 
 ```
-docker run --rm -v ${ZDLC_DATA_DIR}:/data:z -v ${ZDLC_CODE_DIR}:/code:z -v ${ZDLC_MODEL_DIR}:/models:z ccfd-pytorch-train-example:latest /code/credit_card_fraud_training.py
+docker run --rm -v ${ZDLC_DATA_DIR}:/data:z -v ${ZDLC_CODE_DIR}:/code:z -v ${ZDLC_MODEL_DIR}:/models:z --userns=keep-id --user $(id -u):$(id -g) ccfd-pytorch-train-example:latest /code/credit_card_fraud_training.py
 ```
 
 | Command<br>and<br>Parameters | Description |
@@ -140,6 +143,8 @@ docker run --rm -v ${ZDLC_DATA_DIR}:/data:z -v ${ZDLC_CODE_DIR}:/code:z -v ${ZDL
 | -v ${ZDLC_DATA_DIR}:/data:z | The `/data` host bind mount points to the directory containing the ccfd data set. `:z` is required to share the volume if SELinux is installed. |
 | -v ${ZDLC_CODE_DIR}:/code:z | The `/code` host bind mount points to the directory with the calling program. `:z` is required to share the volume if SELinux is installed. |
 | -v ${ZDLC_MODEL_DIR}:/model:z | The `/model` host bind mount points to the directory with the model `.so` file. `:z` is required to share the volume if SELinux is installed. |
+| --userns=keep-id | Maps the host user's UID/GID directly into the container so files written by the container are owned by the host user. |
+| --user $(id -u)<span>:</span>$(id -g) | Runs the container process as the same user ID and group ID as the user creating the container. |
 
 ## IBM Z Deep Learning Compiler command line interface help <a id="cli-help"></a>
 
