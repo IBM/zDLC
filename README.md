@@ -35,7 +35,7 @@ can then be integrated into C, C++, Java, or Python applications.
 
 The compiled models take advantage of IBM zSystems technologies including SIMD
 on IBM z13 and later and the Integrated Accelerator for AI available on IBM z16
-and z17 without changes to the original model.
+and later without changes to the original model.
 
 ONNX is an open format for representing AI models. It is open source and vendor
 neutral. Some AI frameworks directly support exporting to .onnx format. For
@@ -68,7 +68,7 @@ Determine the desired version of the zdlc image to download from the [IBM Z and 
 Set ZDLC_IMAGE based on the desired IBM zDLC version:
 
 ```
-ZDLC_IMAGE=icr.io/ibmz/zdlc:5.1.0
+ZDLC_IMAGE=icr.io/ibmz/zdlc:5.1.1
 ```
 <br>
 
@@ -464,9 +464,9 @@ Note that the output values will be random since the input values are random.
 # IBM Z Integrated Accelerator for AI <a id="nnpa-overview"></a>
 
 IBM z16 systems include a new Integrated Accelerator for AI to enable real-time
-AI for transaction processing at scale. IBM Z17 introduces the second genration 
-of the Telum II processor. The IBM Z Deep Learning Compiler helps your new and
-existing deep learning models take advantage of this new accelerator.
+AI for transaction processing at scale. The IBM Z Deep Learning Compiler helps
+your new and existing deep learning models take advantage of this new
+accelerator.
 
 Any IBM zSystem can be used to compile models to take advantage of the
 Integrated Accelerator for AI, including IBM z15 and older machines. However, if
@@ -492,7 +492,7 @@ No changes are required to your model.
 To compile a model to use the Integrated Accelerator for AI, The `--maccel=NNPA`
 option needs to be specified on the command line.
 Additionally, since the accelerator is only available for IBM z16 and greater,
-it is recommended to use `-march=z16` or `-march=z17`
+it is recommended to also use `-march=z17`.
 
 Using the [`.so shared library example`](#build-so), the command line to compile
 models that take advantage of the Integrated Accelerator for AI is:
@@ -570,7 +570,7 @@ will run on NNPA.  This can happen for reasons such as:
 * The operation will run faster on the CPU.
 
 For details on obtaining or specifying the target for device placement see:
-* [Open source device placement documentation](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/JsonConfigFile-NNPA.md) <a id=":device-placement"></a>
+* [Open source device placement documentation](https://github.com/onnx/onnx-mlir/blob/0.5.1.1/docs/JsonConfigFile-NNPA.md) <a id=":device-placement"></a>
 
 ### Examples
 
@@ -741,7 +741,7 @@ docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} --EmitLib --O3 -ma
 
 * Debug information increases the size of the compiled `.so` file.
 * The debug information can be used with `gdb` and other debugging tools that support DWARF debug format.
-* For detailed information on using debug information for testing and troubleshooting, [Open source testing documentation](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/Testing.md).
+* For detailed information on using debug information for testing and troubleshooting, [Open source testing documentation](https://github.com/onnx/onnx-mlir/blob/0.5.1.1/docs/Testing.md).
 
 
 <br>
@@ -760,8 +760,8 @@ ONNX-MLIR accelerators are not supported by IBM zDLC.
 The following links lists supported operators, operator opset ranges, and any
 operator specific limitations. Operators that are not listed or usage of
 documented limitations are beyond IBM zDLC project scope:
-* [Supported ONNX Operation for CPU](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/SupportedONNXOps-cpu.md) <a id="cpu-ops"></a>
-* [Supported ONNX Operation for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/SupportedONNXOps-NNPA.md) <a id="nnpa-ops"></a>
+* [Supported ONNX Operation for CPU](https://github.com/onnx/onnx-mlir/blob/0.5.1.1/docs/SupportedONNXOps-cpu.md) <a id="cpu-ops"></a>
+* [Supported ONNX Operation for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/0.5.1.1/docs/SupportedONNXOps-NNPA.md) <a id="nnpa-ops"></a>
 
 
 ## Versioning Policy <a id="versioning"></a>
