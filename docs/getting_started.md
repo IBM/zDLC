@@ -130,7 +130,7 @@ Choose the language that fits your application:
 
 | Language | Next step |
 |---|---|
-| **Python** | Continue below for the generic Python example, or see [Encoder LLM](use_cases/encoder_llm.html) / [Credit Card Fraud Detection](use_cases/credit_card_fraud.html) for full end-to-end examples. |
+| **Python** | Continue below for the generic Python example, or see [Encoder LLM](use_cases/bert_base.html) / [Credit Card Fraud Detection](use_cases/credit_card_fraud.html) for full end-to-end examples. |
 | **C++** | See [C++ and Java Inference](use_cases/cpp_java.html) for the full build and run walkthrough. |
 | **Java** | See [C++ and Java Inference](use_cases/cpp_java.html) for the full build and run walkthrough. |
 

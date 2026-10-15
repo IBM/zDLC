@@ -39,4 +39,4 @@ See [Verified ONNX Models](https://github.com/IBM/zDLC/blob/main/models/README.m
 
 ---
 
-In the meantime, refer to [Encoder LLM Inference](encoder_llm.html) for a complete end-to-end example, and [Getting Started](../getting_started.html) to compile any ONNX model manually.
+In the meantime, refer to [Encoder LLM Inference](bert_base.html) for a complete end-to-end example, and [Getting Started](../getting_started.html) to compile any ONNX model manually.
