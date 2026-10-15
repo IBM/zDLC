@@ -1,7 +1,10 @@
 title: IBM Z Deep Learning Compiler
 description: Compile ONNX models into optimized shared libraries for IBM Z systems.
 
-theme: just-the-docs
+remote_theme: just-the-docs/just-the-docs
+
+plugins:
+  - jekyll-remote-theme
 
 url: ""
 baseurl: ""
