@@ -37,8 +37,6 @@ color_scheme: light
 
 # Exclude non-doc files from the Jekyll build
 exclude:
-  - Gemfile
-  - Gemfile.lock
   - "*.sh"
   - .github/
   - docker/
