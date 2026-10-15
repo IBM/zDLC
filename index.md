@@ -6,7 +6,7 @@ nav_order: 1
 
 # IBM Z Deep Learning Compiler (IBM zDLC)
 
-The IBM Z Deep Learning Compiler compiles `.onnx` AI models into optimized shared libraries for IBM Z systems. Compiled models run in C, C++, Java, or Python applications and automatically take advantage of IBM Z hardware — including SIMD on IBM z13 and later, and the Integrated Accelerator for AI (NNPA) on IBM z16 and z17.
+The IBM Z Deep Learning Compiler compiles `.onnx` AI models into optimized shared libraries for IBM Z systems. Compiled models run in C, C++, Java, or Python applications and automatically take advantage of IBM Z hardware — including SIMD on IBM z13 and later, and the Integrated Accelerator for AI (NNPA) on IBM z16 and later.
 
 IBM zDLC is built on [ONNX-MLIR](http://onnx.ai/onnx-mlir/) and is distributed as a container image from the [IBM Z and LinuxONE Container Registry](https://ibm.github.io/ibm-z-oss-hub/main/main.html).
 
@@ -47,7 +47,7 @@ IBM zDLC is built on [ONNX-MLIR](http://onnx.ai/onnx-mlir/) and is distributed a
 
 ```bash
 # 1. Pull the compiler image
-ZDLC_IMAGE=icr.io/ibmz/zdlc:5.1.0
+ZDLC_IMAGE=icr.io/ibmz/zdlc:5.1.1
 docker pull ${ZDLC_IMAGE}
 
 # 2. Clone this repository

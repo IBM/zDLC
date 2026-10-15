@@ -8,7 +8,7 @@ nav_order: 2
 
 ## Overview
 
-The IBM Z Deep Learning Compiler (IBM zDLC) compiles `.onnx` deep learning models into shared libraries optimized for IBM Z systems. The compiled libraries integrate directly into C, C++, Java, or Python applications and automatically take advantage of IBM Z hardware including SIMD on IBM z13 and later, and the Integrated Accelerator for AI (NNPA) on IBM z16 and z17.
+The IBM Z Deep Learning Compiler (IBM zDLC) compiles `.onnx` deep learning models into shared libraries optimized for IBM Z systems. The compiled libraries integrate directly into C, C++, Java, or Python applications and automatically take advantage of IBM Z hardware including SIMD on IBM z13 and later, and the Integrated Accelerator for AI (NNPA) on IBM z16 and later.
 
 ONNX is an open, vendor-neutral format for representing AI models. Some frameworks (PyTorch, TensorFlow, etc.) support exporting to `.onnx` directly. For others, open source converters are available — see [ONNX Support Tools](https://onnx.ai/supported-tools.html) for a full list.
 
@@ -35,7 +35,7 @@ Credentials for `icr.io` are required. See [IBM Z and LinuxONE Container Registr
 Set the image version you want to use:
 
 ```bash
-ZDLC_IMAGE=icr.io/ibmz/zdlc:5.1.0
+ZDLC_IMAGE=icr.io/ibmz/zdlc:5.1.1
 ```
 
 Pull the image:

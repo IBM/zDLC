@@ -31,7 +31,7 @@ docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} \
 | `--enable-debug-info` | Adds symbol tables, line numbers, and metadata to the `.so`. Increases file size. |
 | `--preserveMLIR` | Keeps MLIR intermediate files alongside the output for enhanced debug context. |
 
-For more on using debug info in testing see [ONNX-MLIR Testing documentation](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/Testing.md).
+For more on using debug info in testing see [ONNX-MLIR Testing documentation](https://github.com/onnx/onnx-mlir/blob/0.5.1.1/docs/Testing.md).
 
 ---
 

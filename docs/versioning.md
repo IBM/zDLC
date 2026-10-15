@@ -17,8 +17,8 @@ Each release of IBM zDLC links to a specific version of ONNX-MLIR and supports C
 
 | Target | Reference |
 |---|---|
-| CPU | [Supported ONNX Operations for CPU](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/SupportedONNXOps-cpu.md) |
-| IBM Z Integrated Accelerator (NNPA) | [Supported ONNX Operations for NNPA](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/SupportedONNXOps-NNPA.md) |
+| CPU | [Supported ONNX Operations for CPU](https://github.com/onnx/onnx-mlir/blob/0.5.1.1/docs/SupportedONNXOps-cpu.md) |
+| IBM Z Integrated Accelerator (NNPA) | [Supported ONNX Operations for NNPA](https://github.com/onnx/onnx-mlir/blob/0.5.1.1/docs/SupportedONNXOps-NNPA.md) |
 
 Operations not listed in these tables, or usage that falls outside documented limitations, are beyond IBM zDLC project scope.
 

@@ -169,7 +169,7 @@ See [Troubleshooting and Debug](troubleshooting.html) for full examples of each 
 
 | Target | Reference |
 |---|---|
-| CPU | [Supported ONNX Operations for CPU](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/SupportedONNXOps-cpu.md) |
-| NNPA (IBM Z Integrated Accelerator) | [Supported ONNX Operations for NNPA](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/SupportedONNXOps-NNPA.md) |
+| CPU | [Supported ONNX Operations for CPU](https://github.com/onnx/onnx-mlir/blob/0.5.1.1/docs/SupportedONNXOps-cpu.md) |
+| NNPA (IBM Z Integrated Accelerator) | [Supported ONNX Operations for NNPA](https://github.com/onnx/onnx-mlir/blob/0.5.1.1/docs/SupportedONNXOps-NNPA.md) |
 
 Operations not listed in these tables, or usage that falls outside documented limitations, are beyond the IBM zDLC project scope.

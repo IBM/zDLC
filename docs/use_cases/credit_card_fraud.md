@@ -59,9 +59,12 @@ docker run --rm \
   -v ${ZDLC_DATA_DIR}:/data:z \
   -v ${ZDLC_CODE_DIR}:/code:z \
   -v ${ZDLC_MODEL_DIR}:/models:z \
+  --userns=keep-id --user $(id -u):$(id -g) \
   ccfd-pytorch-train-example:latest \
   /code/credit_card_fraud_training.py
 ```
+
+`--userns=keep-id --user $(id -u):$(id -g)` runs the container as your host user, so the `ccfd.onnx` it writes to the bind-mounted `${ZDLC_MODEL_DIR}` is owned by you.
 
 Training iterates over multiple epochs — the epoch number in the output shows progress. When complete, `ccfd.onnx` is written to `${ZDLC_MODEL_DIR}`.
 

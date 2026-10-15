@@ -106,7 +106,7 @@ Sample output:
 Common reasons an operator stays on CPU:
 - Data type is not F16 or F32.
 - Tensor rank is outside the range `(0, 4]`.
-- The operation is simply not supported by NNPA (see [Supported ONNX Operations for NNPA](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/SupportedONNXOps-NNPA.md)).
+- The operation is simply not supported by NNPA (see [Supported ONNX Operations for NNPA](https://github.com/onnx/onnx-mlir/blob/0.5.1.1/docs/SupportedONNXOps-NNPA.md)).
 
 ---
 
@@ -158,10 +158,10 @@ docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} \
   ${ZDLC_MODEL_NAME}.onnx
 ```
 
-For full JSON schema documentation see the [open source device placement documentation](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/JsonConfigFile-NNPA.md).
+For full JSON schema documentation see the [open source device placement documentation](https://github.com/onnx/onnx-mlir/blob/0.5.1.1/docs/JsonConfigFile-NNPA.md).
 
 ---
 
 ## Supported ONNX operations for NNPA
 
-See [Supported ONNX Operations for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/0.5.1.0/docs/SupportedONNXOps-NNPA.md) for the complete list of operators and any operation-specific limitations.
+See [Supported ONNX Operations for IBM Z Integrated Accelerator (NNPA)](https://github.com/onnx/onnx-mlir/blob/0.5.1.1/docs/SupportedONNXOps-NNPA.md) for the complete list of operators and any operation-specific limitations.
