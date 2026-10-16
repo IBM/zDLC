@@ -119,8 +119,8 @@ docker run --rm \
 
 The compiled `.so` is written to `${ZDLC_MODEL_DIR}`.
 
-> For a full description of all compiler flags, see [Compiler Options](compiler_options.html).  
-> To target the Integrated Accelerator for AI, see [IBM Z Integrated Accelerator for AI](accelerator.html).
+> For a full description of all compiler flags, see [Compiler Options — CPU](compiler_options_cpu.html).  
+> To target the Integrated Accelerator for AI, see [Compiler Options — NNPA](compiler_options_nnpa.html).
 
 ---
 

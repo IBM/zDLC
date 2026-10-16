@@ -28,14 +28,18 @@ IBM zDLC is built on [ONNX-MLIR](http://onnx.ai/onnx-mlir/) and is distributed a
 | [LLM Serving with Triton Inference Server](docs/use_cases/triton_llm.html) | Serve zDLC-compiled models via HTTP/gRPC using the IBM Z Triton Inference Server. |
 | [Credit Card Fraud Detection](docs/use_cases/credit_card_fraud.html) | Train a PyTorch model, compile it with zDLC, and run accelerated fraud scoring on IBM Z. |
 | [C++ and Java Inference](docs/use_cases/cpp_java.html) | Build and run C++ and Java applications against zDLC-compiled models. |
+| [Dynamic Shapes](docs/use_cases/dynamic_shapes.html) | Get maximum NNPA coverage for models with variable-length inputs like BERT. |
+| [Large Models (External Data)](docs/use_cases/large_models.html) | Compile models over 2 GB by splitting weights to an external data file first. |
+| [JSON Configuration File](docs/use_cases/json_config.html) | Store compile flags and control per-operator NNPA placement and quantization in a versioned JSON file. |
+| [Debugging with --EmitLLVMIR](docs/use_cases/llvmir_debugging.html) | Diagnose wrong model outputs using LLVM IR inspection. |
 | [Decoder LLM Inference](docs/use_cases/decoder_llm.html) | *(Coming soon)* GPT-2 and T5 decoder inference examples. |
 
 ### Reference
 
 | Page | Description |
 |---|---|
-| [Compiler Options](docs/compiler_options.html) | Complete reference for all zDLC compiler flags — output formats, optimization, NNPA, shape info, diagnostics. |
-| [IBM Z Integrated Accelerator for AI (NNPA)](docs/accelerator.html) | NNPA deep dive — enabling acceleration, quantization, device placement, and performance tuning. |
+| [Compiler Options — CPU](docs/compiler_options_cpu.html) | Output formats, target architecture, optimization, parallelism, and debug flags. |
+| [Compiler Options — NNPA](docs/compiler_options_nnpa.html) | NNPA acceleration, placement heuristic, quantization, dynamic shapes, and device placement. |
 | [Troubleshooting and Debug](docs/troubleshooting.html) | Debug symbols, profiling, instrumentation options, and the NNPA unsupported ops report. |
 | [Scope and Versioning](docs/versioning.html) | Supported ONNX operations, release cadence, and compatibility policy. |
 

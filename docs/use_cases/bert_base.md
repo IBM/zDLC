@@ -108,7 +108,7 @@ docker run --rm \
   ${ZDLC_MODEL_NAME}/${ZDLC_MODEL_NAME}.onnx
 ```
 
-See [Compiler Options](../compiler_options.html) for a full flag reference and [IBM Z Integrated Accelerator for AI](../accelerator.html) for NNPA tuning guidance.
+See [Compiler Options — CPU](../compiler_options_cpu.html) for a full flag reference and [Compiler Options — NNPA](../compiler_options_nnpa.html) for NNPA tuning guidance.
 
 ---
 

@@ -83,7 +83,7 @@ docker run --rm \
 
 The compiled `ccfd.so` is written to `${ZDLC_MODEL_DIR}`.
 
-See [Compiler Options](../compiler_options.html) for a full flag reference and [IBM Z Integrated Accelerator for AI](../accelerator.html) for NNPA tuning guidance.
+See [Compiler Options — CPU](../compiler_options_cpu.html) for a full flag reference and [Compiler Options — NNPA](../compiler_options_nnpa.html) for NNPA tuning guidance.
 
 ---
 
