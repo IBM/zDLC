@@ -1,3 +1,7 @@
+# Credit Card Fraud Detection — Developer Reference
+
+> **Full documentation:** See [Credit Card Fraud Detection](../../docs/use_cases/credit_card_fraud.md) for the complete step-by-step guide including training, compilation, NNPA acceleration, and inference.
+
 # Running the Credit Card Fraud Detection Sample Program <a id="ccfd-example"></a>
 
 ## Download the IBM Z Deep Learning Compiler container <a id="container"></a>
@@ -12,7 +16,7 @@ Determine the desired versions of the zdlc image to download from the [IBM Z and
 Set the enviorment variable based on the desired image version:
 
 ```
-ZDLC_IMAGE=icr.io/ibmz/zdlc:5.1.0
+ZDLC_IMAGE=icr.io/ibmz/zdlc:5.1.1
 ```
 <br>
 
@@ -130,7 +134,7 @@ docker build -f ${ZDLC_DIR}/docker/Dockerfile.ccfd_train -t ccfd-pytorch-train-e
 ### Training the CCFD model
 
 ```
-docker run --rm -v ${ZDLC_DATA_DIR}:/data:z -v ${ZDLC_CODE_DIR}:/code:z -v ${ZDLC_MODEL_DIR}:/models:z ccfd-pytorch-train-example:latest /code/credit_card_fraud_training.py
+docker run --rm -v ${ZDLC_DATA_DIR}:/data:z -v ${ZDLC_CODE_DIR}:/code:z -v ${ZDLC_MODEL_DIR}:/models:z --userns=keep-id --user $(id -u):$(id -g) ccfd-pytorch-train-example:latest /code/credit_card_fraud_training.py
 ```
 
 | Command<br>and<br>Parameters | Description |
@@ -140,6 +144,8 @@ docker run --rm -v ${ZDLC_DATA_DIR}:/data:z -v ${ZDLC_CODE_DIR}:/code:z -v ${ZDL
 | -v ${ZDLC_DATA_DIR}:/data:z | The `/data` host bind mount points to the directory containing the ccfd data set. `:z` is required to share the volume if SELinux is installed. |
 | -v ${ZDLC_CODE_DIR}:/code:z | The `/code` host bind mount points to the directory with the calling program. `:z` is required to share the volume if SELinux is installed. |
 | -v ${ZDLC_MODEL_DIR}:/model:z | The `/model` host bind mount points to the directory with the model `.so` file. `:z` is required to share the volume if SELinux is installed. |
+| --userns=keep-id | Maps the host user's UID/GID directly into the container so files written by the container are owned by the host user. |
+| --user $(id -u)<span>:</span>$(id -g) | Runs the container process as the same user ID and group ID as the user creating the container. |
 
 ## IBM Z Deep Learning Compiler command line interface help <a id="cli-help"></a>
 

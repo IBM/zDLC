@@ -1,4 +1,6 @@
-# LLM Code Examples with IBM Z Deep Learning Compiler(zDLC) <a id="llm-example"></a>
+# LLM Code Examples — Developer Reference
+
+> **Full documentation:** See [Encoder LLM Inference (BERT)](../../docs/use_cases/bert_base.md) for the complete step-by-step guide including model download, compilation, NNPA acceleration, and all inference use cases.
 
 ## Overview
 
