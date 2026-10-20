@@ -130,62 +130,9 @@ Choose the language that fits your application:
 
 | Language | Next step |
 |---|---|
-| **Python** | Continue below for the generic Python example, or see [Encoder LLM](use_cases/bert_base.html) / [Credit Card Fraud Detection](use_cases/credit_card_fraud.html) for full end-to-end examples. |
-| **C++** | See [C++ and Java Inference](use_cases/cpp_java.html) for the full build and run walkthrough. |
-| **Java** | See [C++ and Java Inference](use_cases/cpp_java.html) for the full build and run walkthrough. |
-
----
-
-## Running the generic Python example
-
-The generic Python example runs inference on any compiled `.so` using the ONNX-MLIR [PyRuntime](http://onnx.ai/onnx-mlir/UsingPyRuntime.html).
-
-First, extract the PyRuntime library from the container:
-
-```bash
-mkdir -p ${ZDLC_LIB_DIR}
-docker run --rm \
-  -v ${ZDLC_LIB_DIR}:/files:z \
-  --entrypoint '/usr/bin/bash' ${ZDLC_IMAGE} \
-  -c "cp /usr/local/lib/PyRuntime* /files"
-```
-
-Build the Python example container:
-
-```bash
-docker build \
-  -f ${ZDLC_DIR}/docker/Dockerfile.python \
-  -t zdlc-python-example .
-```
-
-Run inference:
-
-```bash
-docker run --rm \
-  -v ${ZDLC_LIB_DIR}:/build/lib:z \
-  -v ${ZDLC_CODE_DIR}:/code:z \
-  -v ${ZDLC_MODEL_DIR}:/models:z \
-  --env PYTHONPATH=/build/lib \
-  zdlc-python-example:latest \
-  /code/deep_learning_compiler_run_model_python.py \
-  /models/${ZDLC_MODEL_NAME}.so
-```
-
-Expected output (values will be random since the input is random):
-
-```
-The input tensor dimensions are:
-[1, 3, 224, 224]
-A brief overview of the output tensor is:
-[[-2.4883294   0.4591511   1.1298141  ... -2.8113475  -1.3842212
-   2.6721394 ]
- [-5.064701    0.17290297 -1.866698   ...  0.39307398 -4.6048536
-   2.116905  ]]
-The dimensions of the output tensor are:
-(3, 1000)
-```
-
-Source code: [`code/deep_learning_compiler_run_model_python.py`](https://github.com/IBM/zDLC/blob/main/code/deep_learning_compiler_run_model_python.py)
+| **Python** | See [Python, C++ and Java Inference](use_cases/cpp_java_python.html) for the generic Python example, or [Encoder LLM](use_cases/bert_base.html) / [Credit Card Fraud Detection](use_cases/credit_card_fraud.html) for full end-to-end examples. |
+| **C++** | See [Python, C++ and Java Inference](use_cases/cpp_java_python.html) for the full build and run walkthrough. |
+| **Java** | See [Python, C++ and Java Inference](use_cases/cpp_java_python.html) for the full build and run walkthrough. |
 
 ---
 
