@@ -2,7 +2,7 @@
 layout: default
 title: Encoder LLM Inference (BERT)
 parent: Use Cases
-nav_order: 1
+nav_order: 3
 ---
 
 

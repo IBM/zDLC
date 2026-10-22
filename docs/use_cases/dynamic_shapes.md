@@ -2,7 +2,7 @@
 layout: default
 title: Dynamic Shapes
 parent: Use Cases
-nav_order: 5
+nav_order: 7
 ---
 
 # Dynamic Shapes and NNPA Acceleration
@@ -63,7 +63,14 @@ To see exactly which operators went to NNPA and which stayed on CPU, stop compil
 docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} \
   --EmitZHighIR --O3 -march=z17 --mtriple=s390x-ibm-loz \
   --maccel=NNPA \
-  ${ZDLC_MODEL_NAME}.onnx 2>&1 | grep -E "^[[:space:]]*(onnx|zhigh)\."
+  ${ZDLC_MODEL_NAME}.onnx
+```
+
+The compiler writes the IR to `${ZDLC_MODEL_DIR}/${ZDLC_MODEL_NAME}.onnx.mlir` instead of printing it. Count the operators in that file:
+
+```bash
+grep -oE "(onnx|zhigh)\.[A-Z][A-Za-z]+" ${ZDLC_MODEL_DIR}/${ZDLC_MODEL_NAME}.onnx.mlir \
+  | sort | uniq -c | sort -rn
 ```
 
 In the output:
@@ -89,6 +96,20 @@ The format is `inputIndex:dim0xdim1x...`. Use `-1` to leave a dimension truly dy
 After this compile, the warning should be gone and `--EmitZHighIR` should show your MatMul and Softmax operations as `zhigh.*`.
 
 > **Note:** The compiled model is now optimized for sequence length 128. If you run it with a different sequence length at runtime, it will still work — NNPA always receives concrete values — but the compiler's optimization decisions were made for 128. For best performance, compile once for each sequence length you care about.
+
+**Leaving batch size dynamic is fine.** For BERT-style models, the hardware constraints the compiler checks (tensor size limits, rank limits) depend on sequence length and hidden size — not batch size. Fixing sequence length to 128 while leaving batch as `-1` gives the compiler everything it needs to verify NNPA legality and place MatMul and Softmax on the accelerator.
+
+**Fully static shapes (optional).** If your deployment always uses a fixed batch size, you can fix all dimensions:
+
+```bash
+docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} \
+  --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz \
+  --maccel=NNPA \
+  --shapeInformation 0:1x128,1:1x128 \
+  ${ZDLC_MODEL_NAME}.onnx
+```
+
+With all dimensions known at compile time, the compiler can pre-allocate all memory statically and eliminate the runtime dimension queries that dynamic dims require. This gives the tightest possible optimization but means the compiled `.so` only works correctly for exactly that batch size and sequence length.
 
 ### Step 4 — Validate the improvement
 

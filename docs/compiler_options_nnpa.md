@@ -102,7 +102,7 @@ Common reasons an operator stays on CPU:
 
 ### Inspect NNPA placement in the IR
 
-The `--EmitZHighIR` and `--EmitZLowIR` flags stop compilation early and print the intermediate representation, letting you see exactly which operators went to NNPA and which stayed on CPU.
+The `--EmitZHighIR` and `--EmitZLowIR` flags stop compilation early and emit the intermediate representation, letting you see exactly which operators went to NNPA and which stayed on CPU.
 
 | Flag | What you see |
 |---|---|
@@ -115,12 +115,19 @@ The `--EmitZHighIR` and `--EmitZLowIR` flags stop compilation early and print th
 docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} \
   --EmitZHighIR --O3 -march=z17 --mtriple=s390x-ibm-loz \
   --maccel=NNPA \
-  bert-base-uncased.onnx 2>&1 | grep -E "(onnx\.|zhigh\.)" | head -40
+  bert-base-uncased.onnx
+```
+
+`--EmitZHighIR` writes the IR to `${ZDLC_MODEL_DIR}/bert-base-uncased.onnx.mlir` instead of printing it. Count the operators in that file:
+
+```bash
+grep -oE "(onnx|zhigh)\.[A-Z][A-Za-z]+" ${ZDLC_MODEL_DIR}/bert-base-uncased.onnx.mlir \
+  | sort | uniq -c | sort -rn
 ```
 
 In the output:
-- Lines with `zhigh.MatMul`, `zhigh.Softmax`, `zhigh.LSTM`, etc. are running on NNPA.
-- Lines with `onnx.MatMul`, `onnx.Softmax`, etc. are running on CPU.
+- `zhigh.MatMul`, `zhigh.Softmax`, `zhigh.LSTM`, etc. are running on NNPA.
+- `onnx.MatMul`, `onnx.Softmax`, etc. are running on CPU.
 
 If an operator you expected on NNPA shows up as `onnx.*`, pair this with `--opt-report=NNPAUnsupportedOps` to find out why.
 
@@ -174,6 +181,31 @@ docker run --rm -v ${ZDLC_MODEL_DIR}:/workdir:z ${ZDLC_IMAGE} \
 ```
 
 Accepted values (comma-separated): `symWeight`, `asymWeight`, `symActivation`, `asymActivation`. When given with no value, the compiler chooses automatically.
+
+### Example — compiling BERT with dynamic quantization
+
+Transformer models like BERT are exported from Hugging Face as an `.onnx` + `.onnx.data` file pair (the model graph and its weight tensors stored separately as [external data](use_cases/large_models.html)). Both files must be in the same directory when compiling. The compiler reads the external constants from the `.onnx.data` file and folds the quantized weights directly into the compiled `.so` — no `.data` file is needed at runtime.
+
+After downloading `bert-base-uncased` using the [Encoder LLM](use_cases/bert_base.html) example, the model directory looks like:
+
+```
+models/bert-base-uncased/
+├── bert-base-uncased.onnx        ← graph structure
+└── bert-base-uncased.onnx.data   ← weight tensors (external data)
+```
+
+Compile with dynamic quantization:
+
+```bash
+docker run --rm \
+  -v ${ZDLC_MODEL_DIR}:/workdir:z \
+  ${ZDLC_IMAGE} \
+  --EmitLib --O3 -march=z17 --mtriple=s390x-ibm-loz \
+  --maccel=NNPA --nnpa-quant-dynamic \
+  bert-base-uncased/bert-base-uncased.onnx
+```
+
+The output `bert-base-uncased/bert-base-uncased.so` is written to the same directory.
 
 **Accuracy note:** Quantizing all eligible matmuls at once sometimes degrades accuracy. If you see accuracy regression, use the JSON config file to selectively disable quantization for specific operators. See [JSON Configuration File](use_cases/json_config.html).
 

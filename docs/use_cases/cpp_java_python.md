@@ -2,7 +2,7 @@
 layout: default
 title: Python, C++ and Java Inference
 parent: Use Cases
-nav_order: 5
+nav_order: 1
 ---
 
 # Use Case: Python, C++ and Java Inference

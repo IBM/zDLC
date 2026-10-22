@@ -2,7 +2,7 @@
 layout: default
 title: LLM Serving with Triton
 parent: Use Cases
-nav_order: 2
+nav_order: 4
 ---
 
 

@@ -87,14 +87,91 @@ if [ -z ${ZDLC_DIR} ] || [ ! -d ${ZDLC_DIR} ]; then echo ERROR: ZDLC_DIR must be
 
 ## Step 4 — Obtain a model
 
-Download the MNIST example model from the ONNX Model Zoo:
+There are several ways to obtain an `.onnx` model. Choose the option that fits your situation.
+
+### Option A — Download from the ONNX Model Zoo
 
 ```bash
 wget --directory-prefix $ZDLC_MODEL_DIR \
   https://github.com/onnx/models/raw/main/validated/vision/classification/mnist/model/${ZDLC_MODEL_NAME}.onnx
 ```
 
-Or browse [Verified ONNX Models](https://github.com/IBM/zDLC/blob/main/models/README.md) for the full list of verified models, or [ONNX Support Tools](https://onnx.ai/supported-tools.html) for converters from other frameworks.
+Browse [Verified ONNX Models](https://github.com/IBM/zDLC/blob/main/models/README.md) for the full list of verified models.
+
+### Option B — Download from Hugging Face
+
+The same MNIST model is mirrored on Hugging Face under the `onnxmodelzoo` organisation:
+
+```bash
+wget --directory-prefix $ZDLC_MODEL_DIR \
+  https://huggingface.co/onnxmodelzoo/mnist-12/resolve/main/mnist-12.onnx
+```
+
+Browse [Hugging Face ONNX models](https://huggingface.co/models?library=onnx) for thousands of community-converted `.onnx` models across many architectures and tasks.
+
+### Option C — Export a PyTorch model to ONNX
+
+If you have a PyTorch model, export it to `.onnx` using `torch.onnx.export`:
+
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class SmallNet(nn.Module):
+    def forward(self, x):
+        return torch.relu(F.linear(x, torch.ones(10, 4)))
+
+model = SmallNet().eval()
+dummy_input = torch.randn(1, 4)
+
+torch.onnx.export(
+    model,
+    dummy_input,
+    "my_model.onnx",
+    input_names=["input"],
+    output_names=["output"],
+    dynamic_axes={"input": {0: "batch_size"}, "output": {0: "batch_size"}},
+    opset_version=17,
+)
+```
+
+Move the exported file into your model directory and update `ZDLC_MODEL_NAME` to match:
+
+```bash
+mv my_model.onnx $ZDLC_MODEL_DIR/
+ZDLC_MODEL_NAME=my_model
+```
+
+For other frameworks see [ONNX Support Tools](https://onnx.ai/supported-tools.html) for the appropriate converter.
+
+### Option D — Build a custom ONNX model from the ONNX spec
+
+Construct an `.onnx` model directly using the [ONNX Python API](https://onnx.ai/onnx/api/), without any training framework:
+
+```python
+import onnx
+from onnx import TensorProto, helper
+
+input_tensor = helper.make_tensor_value_info("input", TensorProto.FLOAT, [1, 4])
+output_tensor = helper.make_tensor_value_info("output", TensorProto.FLOAT, [1, 4])
+relu_node = helper.make_node("Relu", inputs=["input"], outputs=["output"])
+
+graph = helper.make_graph([relu_node], "relu-graph", [input_tensor], [output_tensor])
+model = helper.make_model(graph, opset_imports=[helper.make_opsetid("", 17)])
+onnx.checker.check_model(model)
+
+onnx.save(model, "my_custom_model.onnx")
+```
+
+Move the file into your model directory and update `ZDLC_MODEL_NAME` to match:
+
+```bash
+mv my_custom_model.onnx $ZDLC_MODEL_DIR/
+ZDLC_MODEL_NAME=my_custom_model
+```
+
+See the [ONNX operator reference](https://onnx.ai/onnx/operators/) for the full list of available operators.
 
 ---
 
