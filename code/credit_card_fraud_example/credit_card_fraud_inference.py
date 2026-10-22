@@ -40,7 +40,7 @@ def main():
 
     # Run the model.
     input_tensor = generate_input()
-    output_tensor = session.run(input_tensor)
+    output_tensor = session.run([input_tensor])
 
 
     print(f"Output Tensor has shape {output_tensor[0].shape} and values:\n{output_tensor[0]}")
